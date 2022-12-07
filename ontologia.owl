@@ -46,36 +46,35 @@
       rdfs:range xsd:integer .
 
 
-###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#forma_fisica
-:forma_fisica rdf:type owl:DatatypeProperty ;
-              rdfs:subPropertyOf owl:topDataProperty .
-
-
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#intensitat
 :intensitat rdf:type owl:DatatypeProperty ;
             rdfs:subPropertyOf owl:topDataProperty .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#nivell_equilibri
-:nivell_equilibri rdf:type owl:DatatypeProperty ;
+:nivell_equilibri rdf:type owl:DatatypeProperty ,
+                           owl:FunctionalProperty ;
                   rdfs:domain :Persona ;
                   rdfs:range xsd:integer .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#nivell_flexibilitat
-:nivell_flexibilitat rdf:type owl:DatatypeProperty ;
+:nivell_flexibilitat rdf:type owl:DatatypeProperty ,
+                              owl:FunctionalProperty ;
                      rdfs:domain :Persona ;
                      rdfs:range xsd:integer .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#nivell_forca
-:nivell_forca rdf:type owl:DatatypeProperty ;
+:nivell_forca rdf:type owl:DatatypeProperty ,
+                       owl:FunctionalProperty ;
               rdfs:domain :Persona ;
               rdfs:range xsd:integer .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#nivell_resistencia
-:nivell_resistencia rdf:type owl:DatatypeProperty ;
+:nivell_resistencia rdf:type owl:DatatypeProperty ,
+                             owl:FunctionalProperty ;
                     rdfs:domain :Persona ;
                     rdfs:range xsd:integer .
 
@@ -117,14 +116,6 @@
 #################################################################
 #    General axioms
 #################################################################
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :Exercici
-                :Patologia
-                :Persona
-              )
-] .
-
 
 [ rdf:type owl:AllDisjointClasses ;
   owl:members ( :Exercici
