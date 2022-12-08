@@ -34,6 +34,7 @@
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#duracio
 :duracio rdf:type owl:DatatypeProperty ;
          rdfs:subPropertyOf owl:topDataProperty ;
+         rdf:type owl:FunctionalProperty ;
          rdfs:domain :Realitzacio ;
          rdfs:range xsd:integer .
 
@@ -48,7 +49,9 @@
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#intensitat
 :intensitat rdf:type owl:DatatypeProperty ;
-            rdfs:subPropertyOf owl:topDataProperty .
+            rdfs:subPropertyOf owl:topDataProperty ;
+            rdfs:domain :Realitzacio ;
+            rdfs:range xsd:string .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#nivell_equilibri
@@ -93,8 +96,28 @@
 #    Classes
 #################################################################
 
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Equilibri
+:Equilibri rdf:type owl:Class ;
+           rdfs:subClassOf :Exercici .
+
+
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Exercici
 :Exercici rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Flexibilitat
+:Flexibilitat rdf:type owl:Class ;
+              rdfs:subClassOf :Exercici .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Fortalesa
+:Fortalesa rdf:type owl:Class ;
+           rdfs:subClassOf :Exercici .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#FortalesaEquilibri
+:FortalesaEquilibri rdf:type owl:Class ;
+                    rdfs:subClassOf :Exercici .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Patologia
@@ -109,13 +132,248 @@
 :Realitzacio rdf:type owl:Class .
 
 
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Resistencia
+:Resistencia rdf:type owl:Class ;
+             rdfs:subClassOf :Exercici .
+
+
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Solucio
 :Solucio rdf:type owl:Class .
 
 
 #################################################################
+#    Individuals
+#################################################################
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Aixecament_lateral_cama
+:Aixecament_lateral_cama rdf:type owl:NamedIndividual ,
+                                  :FortalesaEquilibri ;
+                         :nom "Aixecament lateral de cames" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Aixecar-se_cadira
+:Aixecar-se_cadira rdf:type owl:NamedIndividual ,
+                            :Fortalesa ;
+                   :nom "Aixecar-se d'una cadira" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Aixecar_bracos
+:Aixecar_bracos rdf:type owl:NamedIndividual ,
+                         :Fortalesa ;
+                :nom "Aixecar bracos lateralment" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Artritis
+:Artritis rdf:type owl:NamedIndividual ,
+                   :Patologia ;
+          :nom "Artritis" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Caminar
+:Caminar rdf:type owl:NamedIndividual ,
+                  :Resistencia ;
+         :nom "Caminar" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Cancer
+:Cancer rdf:type owl:NamedIndividual ,
+                 :Patologia ;
+        :nom "Cancer" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Cardiovascular
+:Cardiovascular rdf:type owl:NamedIndividual ,
+                         :Patologia ;
+                :nom "Cardiovascular" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Dansa
+:Dansa rdf:type owl:NamedIndividual ,
+                :Resistencia ;
+       :nom "Dansa" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Depressio
+:Depressio rdf:type owl:NamedIndividual ,
+                    :Patologia ;
+           :nom "Depressio" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Diabetis
+:Diabetis rdf:type owl:NamedIndividual ,
+                   :Patologia ;
+          :nom "Diabetis" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Estirament_bessons
+:Estirament_bessons rdf:type owl:NamedIndividual ,
+                             :Flexibilitat ;
+                    :nom "Estirament de bessons" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Estirament_canell
+:Estirament_canell rdf:type owl:NamedIndividual ,
+                            :Flexibilitat ;
+                   :nom "Estirament de canell" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Estirament_quadriceps
+:Estirament_quadriceps rdf:type owl:NamedIndividual ,
+                                :Flexibilitat ;
+                       :nom "Estirament de quadriceps" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Estirament_triceps
+:Estirament_triceps rdf:type owl:NamedIndividual ,
+                             :Flexibilitat ;
+                    :nom "Estirament de triceps" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Estirament_turmell
+:Estirament_turmell rdf:type owl:NamedIndividual ,
+                             :Flexibilitat ;
+                    :nom "Estirament de turmell" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Exercicis_biceps
+:Exercicis_biceps rdf:type owl:NamedIndividual ,
+                           :Fortalesa ;
+                  :nom "Exercicis de biceps" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Exercicis_equilibri
+:Exercicis_equilibri rdf:type owl:NamedIndividual ,
+                              :Equilibri ;
+                     :nom "Exercicis d'equilibri" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Extensio_genoll
+:Extensio_genoll rdf:type owl:NamedIndividual ,
+                          :Fortalesa ;
+                 :nom "Extensio de genoll" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Extensio_maluc
+:Extensio_maluc rdf:type owl:NamedIndividual ,
+                         :FortalesaEquilibri ;
+                :nom "Extensio de maluc" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Extensio_triceps
+:Extensio_triceps rdf:type owl:NamedIndividual ,
+                           :Fortalesa ;
+                  :nom "Extensio de triceps" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Felxio_plantar
+:Felxio_plantar rdf:type owl:NamedIndividual ,
+                         :FortalesaEquilibri ;
+                :nom "Flexio plantar" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Flexio_espatlla
+:Flexio_espatlla rdf:type owl:NamedIndividual ,
+                          :Fortalesa ;
+                 :nom "Flexio d'espatlla" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Flexio_genoll
+:Flexio_genoll rdf:type owl:NamedIndividual ,
+                        :FortalesaEquilibri ;
+               :nom "Flexio de genoll" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Flexio_maluc
+:Flexio_maluc rdf:type owl:NamedIndividual ,
+                       :FortalesaEquilibri ;
+              :nom "Flexio de maluc" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Fragilitat
+:Fragilitat rdf:type owl:NamedIndividual ,
+                     :Patologia ;
+            :nom "Fragilitat" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Hipertensio
+:Hipertensio rdf:type owl:NamedIndividual ,
+                      :Patologia ;
+             :nom "Hipertensio" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Malaltia_pulmonar
+:Malaltia_pulmonar rdf:type owl:NamedIndividual ,
+                            :Patologia ;
+                   :nom "Malaltia pulmonar" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Natacio
+:Natacio rdf:type owl:NamedIndividual ,
+                  :Resistencia ;
+         :nom "Natacio" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Osteoporosi
+:Osteoporosi rdf:type owl:NamedIndividual ,
+                      :Patologia ;
+             :nom "Osteoporosi" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Pedalar
+:Pedalar rdf:type owl:NamedIndividual ,
+                  :Resistencia ;
+         :nom "Pedalar" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Pujar_escales
+:Pujar_escales rdf:type owl:NamedIndividual ,
+                        :Resistencia ;
+               :nom "Pujar escales" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Remar
+:Remar rdf:type owl:NamedIndividual ,
+                :Resistencia ;
+       :nom "Remar" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Rotacio_doble_maluc
+:Rotacio_doble_maluc rdf:type owl:NamedIndividual ,
+                              :Flexibilitat ;
+                     :nom "Rotacio doble de maluc" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Rotacio_espatlla
+:Rotacio_espatlla rdf:type owl:NamedIndividual ,
+                           :Flexibilitat ;
+                  :nom "Rotacio d'espatlla" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Rotacio_simple_maluc
+:Rotacio_simple_maluc rdf:type owl:NamedIndividual ,
+                               :Flexibilitat ;
+                      :nom "Rotacio simple de maluc" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Sobrepes
+:Sobrepes rdf:type owl:NamedIndividual ,
+                   :Patologia ;
+          :nom "Sobrepes" .
+
+
+#################################################################
 #    General axioms
 #################################################################
+
+[ rdf:type owl:AllDisjointClasses ;
+  owl:members ( :Equilibri
+                :Flexibilitat
+                :Fortalesa
+                :FortalesaEquilibri
+                :Resistencia
+              )
+] .
+
 
 [ rdf:type owl:AllDisjointClasses ;
   owl:members ( :Exercici

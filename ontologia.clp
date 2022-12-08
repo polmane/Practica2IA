@@ -2,7 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology ontologia.owl
-;;; :Date 07/12/2022 02:43:46
+;;; :Date 08/12/2022 14:44:37
 
 (defclass Exercici
     (is-a USER)
@@ -14,6 +14,36 @@
     (slot nom
         (type STRING)
         (create-accessor read-write))
+)
+
+(defclass Equilibri
+    (is-a Exercici)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Flexibilitat
+    (is-a Exercici)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Fortalesa
+    (is-a Exercici)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass FortalesaEquilibri
+    (is-a Exercici)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Resistencia
+    (is-a Exercici)
+    (role concrete)
+    (pattern-match reactive)
 )
 
 (defclass Patologia
@@ -35,16 +65,16 @@
     (slot edat
         (type INTEGER)
         (create-accessor read-write))
-    (multislot nivell_equilibri
+    (slot nivell_equilibri
         (type INTEGER)
         (create-accessor read-write))
-    (multislot nivell_flexibilitat
+    (slot nivell_flexibilitat
         (type INTEGER)
         (create-accessor read-write))
-    (multislot nivell_forca
+    (slot nivell_forca
         (type INTEGER)
         (create-accessor read-write))
-    (multislot nivell_resistencia
+    (slot nivell_resistencia
         (type INTEGER)
         (create-accessor read-write))
     (slot nom
@@ -56,8 +86,11 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (multislot duracio
+    (slot duracio
         (type INTEGER)
+        (create-accessor read-write))
+    (multislot intensitat
+        (type STRING)
         (create-accessor read-write))
 )
 
@@ -68,4 +101,148 @@
 )
 
 (definstances instances
+    ([Aixecament_lateral_cama] of FortalesaEquilibri
+         (nom  "Aixecament lateral de cames")
+    )
+
+    ([Aixecar-se_cadira] of Fortalesa
+         (nom  "Aixecar-se d'una cadira")
+    )
+
+    ([Aixecar_bracos] of Fortalesa
+         (nom  "Aixecar bracos lateralment")
+    )
+
+    ([Artritis] of Patologia
+         (nom  "Artritis")
+    )
+
+    ([Caminar] of Resistencia
+         (nom  "Caminar")
+    )
+
+    ([Cancer] of Patologia
+         (nom  "Cancer")
+    )
+
+    ([Cardiovascular] of Patologia
+         (nom  "Cardiovascular")
+    )
+
+    ([Dansa] of Resistencia
+         (nom  "Dansa")
+    )
+
+    ([Depressio] of Patologia
+         (nom  "Depressio")
+    )
+
+    ([Diabetis] of Patologia
+         (nom  "Diabetis")
+    )
+
+    ([Estirament_bessons] of Flexibilitat
+         (nom  "Estirament de bessons")
+    )
+
+    ([Estirament_canell] of Flexibilitat
+         (nom  "Estirament de canell")
+    )
+
+    ([Estirament_quadriceps] of Flexibilitat
+         (nom  "Estirament de quadriceps")
+    )
+
+    ([Estirament_triceps] of Flexibilitat
+         (nom  "Estirament de triceps")
+    )
+
+    ([Estirament_turmell] of Flexibilitat
+         (nom  "Estirament de turmell")
+    )
+
+    ([Exercicis_biceps] of Fortalesa
+         (nom  "Exercicis de biceps")
+    )
+
+    ([Exercicis_equilibri] of Equilibri
+         (nom  "Exercicis d'equilibri")
+    )
+
+    ([Extensio_genoll] of Fortalesa
+         (nom  "Extensio de genoll")
+    )
+
+    ([Extensio_maluc] of FortalesaEquilibri
+         (nom  "Extensio de maluc")
+    )
+
+    ([Extensio_triceps] of Fortalesa
+         (nom  "Extensio de triceps")
+    )
+
+    ([Felxio_plantar] of FortalesaEquilibri
+         (nom  "Flexio plantar")
+    )
+
+    ([Flexio_espatlla] of Fortalesa
+         (nom  "Flexio d'espatlla")
+    )
+
+    ([Flexio_genoll] of FortalesaEquilibri
+         (nom  "Flexio de genoll")
+    )
+
+    ([Flexio_maluc] of FortalesaEquilibri
+         (nom  "Flexio de maluc")
+    )
+
+    ([Fragilitat] of Patologia
+         (nom  "Fragilitat")
+    )
+
+    ([Hipertensio] of Patologia
+         (nom  "Hipertensio")
+    )
+
+    ([Malaltia_pulmonar] of Patologia
+         (nom  "Malaltia pulmonar")
+    )
+
+    ([Natacio] of Resistencia
+         (nom  "Natacio")
+    )
+
+    ([Osteoporosi] of Patologia
+         (nom  "Osteoporosi")
+    )
+
+    ([Pedalar] of Resistencia
+         (nom  "Pedalar")
+    )
+
+    ([Pujar_escales] of Resistencia
+         (nom  "Pujar escales")
+    )
+
+    ([Remar] of Resistencia
+         (nom  "Remar")
+    )
+
+    ([Rotacio_doble_maluc] of Flexibilitat
+         (nom  "Rotacio doble de maluc")
+    )
+
+    ([Rotacio_espatlla] of Flexibilitat
+         (nom  "Rotacio d'espatlla")
+    )
+
+    ([Rotacio_simple_maluc] of Flexibilitat
+         (nom  "Rotacio simple de maluc")
+    )
+
+    ([Sobrepes] of Patologia
+         (nom  "Sobrepes")
+    )
+
 )
