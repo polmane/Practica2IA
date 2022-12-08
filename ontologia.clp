@@ -2,13 +2,13 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology ontologia.owl
-;;; :Date 08/12/2022 14:44:37
+;;; :Date 09/12/2022 00:07:39
 
 (defclass Exercici
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (multislot es_realitza
+    (slot es_realitza
         (type INSTANCE)
         (create-accessor read-write))
     (slot nom
@@ -59,7 +59,7 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (slot pateix_una
+    (multislot pateix
         (type INSTANCE)
         (create-accessor read-write))
     (slot edat
@@ -98,6 +98,15 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
+    (multislot composta_per
+        (type INSTANCE)
+        (create-accessor read-write))
+    (slot dia_solucio
+        (type INTEGER)
+        (create-accessor read-write))
+    (slot temps_restant
+        (type INTEGER)
+        (create-accessor read-write))
 )
 
 (definstances instances
