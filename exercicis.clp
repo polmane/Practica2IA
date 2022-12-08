@@ -90,6 +90,19 @@
 	(modify ?u (cor ?e))
 )
 
+(defrule info-usuari::pregunta-fragilitat "Caus sovint?"
+	?u <- (pregunta-usuari (edat ?edat))
+	=>
+	(bind ?e (pregunta-si-no "Caus sovint?"))
+	(modify ?u (cor ?e))
+)
+
+(defrule info-usuari::pregunta-fragilitat-2 "Recordes el que has fet aquest matí?"
+	?u <- (pregunta-usuari (edat ?edat))
+	=>
+	(bind ?e (pregunta-si-no "Recordes el que has fet aquest matí?"))
+	(modify ?u (cor ?e))
+)
 
 ;;;------------------------------------------------------------------------------------------------------------------------------------------------------
 ;;;----------  					TEMPLATES					 		---------- 								TEMPLATES

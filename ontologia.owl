@@ -12,24 +12,36 @@
 #    Object Properties
 #################################################################
 
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#composta_per
+:composta_per rdf:type owl:ObjectProperty ;
+              rdfs:domain :Solucio ;
+              rdfs:range :Exercici .
+
+
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#es_realitza
 :es_realitza rdf:type owl:ObjectProperty ;
              rdfs:subPropertyOf owl:topObjectProperty ;
+             rdf:type owl:FunctionalProperty ;
              rdfs:domain :Exercici ;
              rdfs:range :Realitzacio .
 
 
-###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#pateix_una
-:pateix_una rdf:type owl:ObjectProperty ;
-            rdfs:subPropertyOf owl:topObjectProperty ;
-            rdf:type owl:FunctionalProperty ;
-            rdfs:domain :Persona ;
-            rdfs:range :Patologia .
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#pateix
+:pateix rdf:type owl:ObjectProperty ;
+        rdfs:domain :Persona ;
+        rdfs:range :Patologia .
 
 
 #################################################################
 #    Data properties
 #################################################################
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#dia_solucio
+:dia_solucio rdf:type owl:DatatypeProperty ,
+                      owl:FunctionalProperty ;
+             rdfs:domain :Solucio ;
+             rdfs:range xsd:integer .
+
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#duracio
 :duracio rdf:type owl:DatatypeProperty ;
@@ -90,6 +102,13 @@
                  :Patologia ,
                  :Persona ;
      rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#temps_restant
+:temps_restant rdf:type owl:DatatypeProperty ,
+                        owl:FunctionalProperty ;
+               rdfs:domain :Solucio ;
+               rdfs:range xsd:integer .
 
 
 #################################################################
