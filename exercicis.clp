@@ -39,40 +39,55 @@
 ;;* DEFFUNCTIONS *
 ;;****************
 
-(deffunction MAIN::ask-question (?question $?allowed-values)
-   (printout t ?question)
-   (bind ?answer (read))
-   (if (lexemep ?answer) 
-       then (bind ?answer (lowcase ?answer)))
-   (while (not (member ?answer ?allowed-values)) do
-      (printout t ?question)
-      (bind ?answer (read))
-      (if (lexemep ?answer) 
-          then (bind ?answer (lowcase ?answer))))
-   ?answer)
-
-(deffunction MAIN::yes-or-no-p (?question)
-   (bind ?response (ask-question ?question yes no y n))
-   (if (or (eq ?response yes) (eq ?response y))
-       then TRUE 
-       else FALSE))
-
-(deffunction MAIN::pregunta-numerica (?pregunta)
-	(format t "%s" ?pregunta)
-	(bind ?response (read))
-	?response
+(deffunction MAIN::pregunta (?pregunta $?valors-permesos)
+    (progn$
+        (?var ?valors-permesos)
+        (lowcase ?var))
+    (format t "¿%s? (%s) " ?pregunta (implode$ ?valors-permesos))
+    (bind ?resposta (read))
+    (while (not (member (lowcase ?resposta) ?valors-permesos)) do
+        (format t "¿%s? (%s) " ?pregunta (implode$ ?valors-permesos))
+        (bind ?resposta (read))
+    )
+    ?resposta
 )
+
+
+(deffunction MAIN::si-o-no-p (?pregunta)
+    (bind ?resposta (pregunta ?pregunta si no s n))
+    (if (or (eq (lowcase ?resposta) si) (eq (lowcase ?resposta) s))
+        then TRUE
+        else FALSE
+    )
+)
+
+
+(deffunction MAIN::pregunta-numerica (?pregunta ?rangini ?rangfi)
+    (format t "¿%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
+    (bind ?resposta (read))
+    (while (not(and(> ?resposta ?rangini)(< ?resposta ?rangfi))) do
+        (format t "¿%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
+        (bind ?resposta (read))
+    )
+    ?resposta
+)
+
 
 ;;***********************
 ;;** MODUL INFO USUARI **
 ;;***********************
-(defrule info-usuari::pregunta-edat "Preguntem la edat de l usuari"
-	?u <- (pregunta-numerica (tamano ?tamano) (nino ?n))
-	(test (> ?tamano 1))
-	(test (eq ?n NONE))
+(defrule info-usuari::pregunta-edat "Quina edat tens?"
+	(not (pregunta-usuari))
 	=>
-	(bind ?e (pregunta-si-no "Le acompanan menores de 12? "))
-	(modify ?u (nino ?e))
+	(bind ?edat (pregunta-numerica "Quina edat tens? " 65 150 ))
+	(assert (pregunta-usuari (edat ?edat)))
+)
+
+(defrule info-usuari::pregunta-cor "Tens algun problema al cor?"
+	?u <- (pregunta-usuari (edat ?edat))
+	=>
+	(bind ?e (pregunta-si-no "Tens algun problema al cor?"))
+	(modify ?u (cor ?e))
 )
 
 
