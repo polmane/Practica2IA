@@ -1,144 +1,14 @@
-;;;======================================================
-;;;   Sistema Expert d'Exercicis Saludables Personalitzats
-;;;
-;;;     Aquest sistema expert recomana exercicis per a
-;;;     persones grans.
-;;;
-;;;     CLIPS Version 6.3
-;;;
-;;;     Load, reset and run.
-;;;======================================================
-
-;;;------------------------------------------------------------------------------------------------------------------------------------------------------
-;;;----------  					 MAIN					 		---------- 								MAIN
-;;;------------------------------------------------------------------------------------------------------------------------------------------------------
-
-;; Aquest es el modul principal
-
-(defmodule MAIN (export ?ALL))
-
-;;; Modul de recopilació
-(defmodule info-usuari
-	(import MAIN ?ALL)
-	(export ?ALL)
-)
-
-(defrule MAIN::initialRule "regla inicial"
-	(declare (salience 10))
-	=>
-	(printout t crlf)
-	(printout t "--------------------------------------------------------------" crlf)
-	(printout t "--------- Recomanacio d'exercicis per a persones grans -------" crlf)
-	(printout t "--------------------------------------------------------------" crlf)
-	(printout t crlf)
-	(focus recopilacio-usuari)
-)
-
-
-;;****************
-;;* DEFFUNCTIONS *
-;;****************
-
-(deffunction MAIN::pregunta (?pregunta $?valors-permesos)
-    (progn$
-        (?var ?valors-permesos)
-        (lowcase ?var))
-    (format t "¿%s? (%s) " ?pregunta (implode$ ?valors-permesos))
-    (bind ?resposta (read))
-    (while (not (member (lowcase ?resposta) ?valors-permesos)) do
-        (format t "¿%s? (%s) " ?pregunta (implode$ ?valors-permesos))
-        (bind ?resposta (read))
-    )
-    ?resposta
-)
-
-
-(deffunction MAIN::si-o-no-p (?pregunta)
-    (bind ?resposta (pregunta ?pregunta si no s n))
-    (if (or (eq (lowcase ?resposta) si) (eq (lowcase ?resposta) s))
-        then TRUE
-        else FALSE
-    )
-)
-
-
-(deffunction MAIN::pregunta-numerica (?pregunta ?rangini ?rangfi)
-    (format t "¿%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
-    (bind ?resposta (read))
-    (while (not(and(> ?resposta ?rangini)(< ?resposta ?rangfi))) do
-        (format t "¿%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
-        (bind ?resposta (read))
-    )
-    ?resposta
-)
-
-
-;;***********************
-;;** MODUL INFO USUARI **
-;;***********************
-(defrule info-usuari::pregunta-edat "Quina edat tens?"
-	(not (pregunta-usuari))
-	=>
-	(bind ?edat (pregunta-numerica "Quina edat tens? " 65 150 ))
-	(assert (pregunta-usuari (edat ?edat)))
-)
-
-(defrule info-usuari::pregunta-cor "Tens algun problema al cor?"
-	?u <- (pregunta-usuari (edat ?edat))
-	=>
-	(bind ?e (pregunta-si-no "Tens algun problema al cor?"))
-	(modify ?u (cor ?e))
-)
-
-(defrule info-usuari::pregunta-fragilitat "Caus sovint?"
-	?u <- (pregunta-usuari (edat ?edat))
-	=>
-	(bind ?e (pregunta-si-no "Caus sovint?"))
-	(modify ?u (cor ?e))
-)
-
-(defrule info-usuari::pregunta-fragilitat-2 "Recordes el que has fet aquest matí?"
-	?u <- (pregunta-usuari (edat ?edat))
-	=>
-	(bind ?e (pregunta-si-no "Recordes el que has fet aquest matí?"))
-	(modify ?u (cor ?e))
-)
-
-;;;------------------------------------------------------------------------------------------------------------------------------------------------------
-;;;----------  					TEMPLATES					 		---------- 								TEMPLATES
-;;;------------------------------------------------------------------------------------------------------------------------------------------------------
-
-;;; Template per les preguntes generals de l usuari
-(deftemplate MAIN::pregunta-usuari
-	(slot edat (type INTEGER))
-	(slot cor (type INSTANCE))
-	(slot fragilitat (type INSTANCE))
-	(slot hipertensio (type INSTANCE))
-    (slot depressio (type INSTANCE))
-)
-
-;;; Template per el nivell fisic de la persona
-(deftemplate MAIN::nivell-fisic
-	(slot flexibilitat (type STRING))
-	(slot equilibri (type STRING))
-	(slot forca (type STRING))
-	(slot resistencia (type STRING))
-)
-
-
-
-
 ;;; ---------------------------------------------------------
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology ontologia.owl
-;;; :Date 08/12/2022 14:44:37
+;;; :Date 09/12/2022 00:07:39
 
 (defclass Exercici
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (multislot es_realitza
+    (slot es_realitza
         (type INSTANCE)
         (create-accessor read-write))
     (slot nom
@@ -189,7 +59,7 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (slot pateix_una
+    (multislot pateix
         (type INSTANCE)
         (create-accessor read-write))
     (slot edat
@@ -228,6 +98,15 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
+    (multislot composta_per
+        (type INSTANCE)
+        (create-accessor read-write))
+    (slot dia_solucio
+        (type INTEGER)
+        (create-accessor read-write))
+    (slot temps_restant
+        (type INTEGER)
+        (create-accessor read-write))
 )
 
 (definstances instances
@@ -376,3 +255,141 @@
     )
 
 )
+
+
+; XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx
+
+;;;======================================================
+;;;   Sistema Expert d'Exercicis Saludables Personalitzats
+;;;
+;;;     Aquest sistema expert recomana exercicis per a
+;;;     persones grans.
+;;;
+;;;     CLIPS Version 6.3
+;;;
+;;;     Load, reset and run.
+;;;======================================================
+
+;;;------------------------------------------------------------------------------------------------------------------------------------------------------
+;;;----------  					 MAIN					 		---------- 								MAIN
+;;;------------------------------------------------------------------------------------------------------------------------------------------------------
+
+;; Aquest es el modul principal
+
+(defmodule MAIN (export ?ALL))
+
+;;; Modul de recopilació
+(defmodule info-usuari
+	(import MAIN ?ALL)
+	(export ?ALL)
+)
+
+(defrule MAIN::initialRule "regla inicial"
+	(declare (salience 10))
+	=>
+	(printout t crlf)
+	(printout t "--------------------------------------------------------------" crlf)
+	(printout t "--------- Recomanacio d'exercicis per a persones grans -------" crlf)
+	(printout t "--------------------------------------------------------------" crlf)
+	(printout t crlf)
+	(focus info-usuari)
+)
+
+
+;;;------------------------------------------------------------------------------------------------------------------------------------------------------
+;;;----------  					TEMPLATES					 		---------- 								TEMPLATES
+;;;------------------------------------------------------------------------------------------------------------------------------------------------------
+
+;;; Template per les preguntes generals de l usuari
+(deftemplate MAIN::pregunta-usuari
+	(slot edat (type INTEGER))
+	(slot cor (type INSTANCE))
+	(slot fragilitat (type INSTANCE))
+	(slot hipertensio (type INSTANCE))
+    (slot depressio (type INSTANCE))
+)
+
+;;; Template per el nivell fisic de la persona
+(deftemplate MAIN::nivell-fisic
+	(slot flexibilitat (type STRING))
+	(slot equilibri (type STRING))
+	(slot forca (type STRING))
+	(slot resistencia (type STRING))
+)
+
+
+;;****************
+;;* DEFFUNCTIONS *
+;;****************
+
+(deffunction MAIN::pregunta (?pregunta $?valors-permesos)
+    (progn$
+        (?var ?valors-permesos)
+        (lowcase ?var))
+    (format t "¿%s? (%s) " ?pregunta (implode$ ?valors-permesos))
+    (bind ?resposta (read))
+    (while (not (member (lowcase ?resposta) ?valors-permesos)) do
+        (format t "¿%s? (%s) " ?pregunta (implode$ ?valors-permesos))
+        (bind ?resposta (read))
+    )
+    ?resposta
+)
+
+
+(deffunction MAIN::pregunta-si-no (?pregunta)
+    (bind ?resposta (pregunta ?pregunta Si No s n))
+    (if (or (eq (lowcase ?resposta) si) (eq (lowcase ?resposta) s))
+        then TRUE
+        else FALSE
+    )
+)
+
+
+(deffunction MAIN::pregunta-numerica (?pregunta ?rangini ?rangfi)
+    (format t "¿%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
+    (bind ?resposta (read))
+    (while (not(and(> ?resposta ?rangini)(< ?resposta ?rangfi))) do
+        (format t "¿%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
+        (bind ?resposta (read))
+    )
+    ?resposta
+)
+
+
+;;***********************
+;;** MODUL INFO USUARI **
+;;***********************
+(defrule info-usuari::pregunta-edat "Quina edat tens?"
+	(not (pregunta-usuari))
+	=>
+	(bind ?edat (pregunta-numerica "Quina edat tens? " 65 150 ))
+	(assert (pregunta-usuari (edat ?edat)))
+)
+
+(defrule info-usuari::pregunta-cor "Tens algun problema al cor?"
+	?u <- (pregunta-usuari (edat ?edat) (cor ?cor))
+    (test (> ?edat 0))
+    (test (eq ?cor [nil]))
+	=>
+	(bind ?e (pregunta-si-no "Tens algun problema al cor?"))
+	(modify ?u (cor ?e))
+)
+
+; (defrule info-usuari::pregunta-fragilitat "Caus sovint?"
+; 	?u <- (pregunta-usuari (edat ?edat))
+; 	=>
+; 	(bind ?e (pregunta-si-no "Caus sovint?"))
+; 	(modify ?u (fragilitat ?e))
+; )
+
+; (defrule info-usuari::pregunta-fragilitat-2 "Recordes el que has fet aquest mati?"
+; 	?u <- (pregunta-usuari (edat ?edat))
+;     ?u <- (pregunta-usuari (fragilitat ?fragilitat))
+; 	=>
+; 	(bind ?e (or ?fragilitat  (pregunta-si-no "Recordes el que has fet aquest mati?")))
+; 	(modify ?u (fragilitat ?e))
+; )
+
+
+
+
