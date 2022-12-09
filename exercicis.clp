@@ -284,6 +284,12 @@
 	(export ?ALL)
 )
 
+;;; Modul d abstraccio
+(defmodule abstraccio
+	(import MAIN ?ALL)
+	(export ?ALL)
+)
+
 (defrule MAIN::initialRule "regla inicial"
 	(declare (salience 10))
 	=>
@@ -303,20 +309,26 @@
 ;;; Template per les preguntes generals de l usuari
 (deftemplate MAIN::pregunta-usuari
 	(slot edat (type INTEGER))
-	; (slot cor (type INSTANCE))
-	; (slot fragilitat (type INSTANCE))
-	; (slot hipertensio (type INSTANCE))
-    ; (slot depressio (type INSTANCE))
+    (slot correr (type SYMBOL))
+    (slot nedar (type SYMBOL))
+    (slot protesis-maluc (type SYMBOL))
     (multislot patologies (type INSTANCE))
 )
 
 ;;; Template per el nivell fisic de la persona
-(deftemplate MAIN::nivell-fisic
+(deftemplate MAIN::punts-fisic
 	(slot flexibilitat (type INTEGER) (default 0))
 	(slot equilibri (type INTEGER) (default 0))
 	(slot forca (type INTEGER) (default 0))
 	(slot resistencia (type INTEGER) (default 0))
     (multislot recomanacions (type STRING))
+)
+
+(deftemplate MAIN::nivell-fisic
+    (slot flexibilitat (type STRING))
+	(slot equilibri (type STRING))
+	(slot forca (type STRING))
+	(slot resistencia (type STRING))
 )
 
 
@@ -397,6 +409,31 @@
 )
 
 
+(deffunction filtrar-multi-por (?li ?sl ?const)
+    (bind ?encontrado FALSE)
+    (if (neq ?li FALSE) then
+        (bind ?li (create$ ?li))
+        (if (> (length ?li) 0) then
+            (loop-for-count (?i 1 (length ?li))
+                (bind $?v (send (nth$ ?i ?li) ?sl))
+                (if (member$ ?const $?v) then
+                    (if (eq ?encontrado FALSE) then
+                        (bind ?encontrado TRUE)
+                        (bind ?ins (nth$ ?i ?li))
+                        else
+                        (bind ?ins (create$ ?ins (nth$ ?i ?li)))
+                    )
+                )
+            )
+        )
+    )
+    (if (eq ?encontrado FALSE) then
+    (bind ?ins FALSE)
+    )
+    (return ?ins)
+)
+
+
 ;;***********************
 ;;** MODUL INFO USUARI **
 ;;***********************
@@ -444,17 +481,17 @@
 
 ;;; PREGUNTES RESISTENCIA
 (defrule info-usuari::pregunta-escales "Et canses molt pujant escales"
-    (not (nivell-fisic))
+    (not (punts-fisic))
     (pregunta-patologies-feta)
     (not (pregunta-escales-feta))
 	=>
     (bind ?e (pregunta-si-no-depen "Et canses molt pujant escales"))
-	(assert (nivell-fisic (resistencia (* ?e -1))))
+	(assert (punts-fisic (resistencia (* ?e -1))))
     (assert (pregunta-escales-feta))
 )
 
 (defrule info-usuari::pregunta-caminar "Surts a caminar diariament"
-    ?u <- (nivell-fisic (resistencia ?resistencia))
+    ?u <- (punts-fisic (resistencia ?resistencia))
     (pregunta-escales-feta)
     (not (pregunta-caminar-feta))
 	=>
@@ -465,7 +502,7 @@
 
 ;;; PREGUNTES FLEXIBILITAT
 (defrule info-usuari::pregunta-sabates "Et pots cordar les sabates sense ajuda"
-    ?u <- (nivell-fisic)
+    ?u <- (punts-fisic)
     (pregunta-caminar-feta)
     (not (pregunta-sabates-feta))
 	=>
@@ -475,7 +512,7 @@
 )
 
 (defrule info-usuari::pregunta-vestirte "Pots vestir-te sol/a"
-    ?u <- (nivell-fisic (flexibilitat ?flexibilitat))
+    ?u <- (punts-fisic (flexibilitat ?flexibilitat))
     (pregunta-sabates-feta)
     (not (pregunta-vestirte-feta))
 	=>
@@ -486,7 +523,7 @@
 
 ;;; PREGUNTES FORCA
 (defrule info-usuari::pregunta-cadira "Pots aixecar-te de la cadira"
-    ?u <- (nivell-fisic)
+    ?u <- (punts-fisic)
     (pregunta-vestirte-feta)
     (not (pregunta-cadira-feta))
 	=>
@@ -496,7 +533,7 @@
 )
 
 (defrule info-usuari::pregunta-garrafa "Pots aixecar una garrafa de 8L"
-    ?u <- (nivell-fisic (forca ?forca))
+    ?u <- (punts-fisic (forca ?forca))
     (pregunta-cadira-feta)
     (not (pregunta-garrafa-feta))
 	=>
@@ -508,7 +545,7 @@
 
 ;;; PREGUNTES EQUILIBRI
 (defrule info-usuari::pregunta-suport "Utilitzes algun suport d equilibri per caminar"
-    ?u <- (nivell-fisic)
+    ?u <- (punts-fisic)
     (pregunta-garrafa-feta)
     (not (pregunta-suport-feta))
 	=>
@@ -518,7 +555,7 @@
 )
 
 (defrule info-usuari::pregunta-baixant "Et sents segur baixant escales"
-    ?u <- (nivell-fisic (equilibri ?equilibri))
+    ?u <- (punts-fisic (equilibri ?equilibri))
     (pregunta-suport-feta)
     (not (pregunta-baixant-feta))
 	=>
@@ -527,37 +564,90 @@
     (assert (pregunta-baixant-feta))
 )
 
-; (defrule info-usuari::pregunta-fragilitat "Caus sovint"
-; 	?u <- (pregunta-usuari (edat ?edat) (fragilitat ?fragilitat))
-;     (test (eq ?fragilitat [nil]))
-; 	=>
-; 	(bind ?e (pregunta-si-no "Caus sovint"))
-; 	(modify ?u (fragilitat ?e))
+;;; PREGUNTES EXERCICIS CONCRETS
+(defrule info-usuari::pregunta-correr "Voldries correr"
+    ?u <- (pregunta-usuari)
+    (pregunta-baixant-feta)
+    (not (pregunta-correr-feta))
+	=>
+    (bind ?e (pregunta-si-no "Voldries correr"))
+	(modify ?u (correr ?e))
+    (assert (pregunta-correr-feta))
+)
+
+(defrule info-usuari::pregunta-nedar "Voldries nedar"
+    ?u <- (pregunta-usuari)
+    (pregunta-correr-feta)
+    (not (pregunta-nedar-feta))
+	=>
+    (bind ?e (pregunta-si-no "Voldries nedar"))
+	(modify ?u (nedar ?e))
+    (assert (pregunta-nedar-feta))
+)
+
+(defrule info-usuari::pregunta-protesis-maluc "Tens protesi de maluc"
+    ?u <- (pregunta-usuari)
+    (pregunta-nedar-feta)
+    (not (pregunta-protesis-maluc-feta))
+	=>
+    (bind ?e (pregunta-si-no "Tens protesi de maluc"))
+	(modify ?u (protesis-maluc ?e))
+    (assert (pregunta-protesis-maluc-feta))
+    (focus abstraccio)
+)
+
+(defrule abstraccio::abstraccio-nivell-problema "Abstraiem el problema"
+    ?u <- (punts-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
+    ?v <- (pregunta-usuari (patologies ?patologies))
+    (not (nivell-fisic))
+    =>
+    (if (< ?equilibri 0)
+        then (bind ?eq "baix")
+        else
+            (if (< ?equilibri 2)
+                then (bind ?eq "moderat")
+                else "alt")
+    )
+
+    (if (< ?flexibilitat 0)
+        then (bind ?fl "baix")
+        else
+            (if (< ?flexibilitat 2)
+                then (bind ?fl "moderat")
+                else "alt")
+    )
+
+    (if (< ?forca 0)
+        then (bind ?fo "baix")
+        else
+            (if (< ?forca 2)
+                then (bind ?fo "moderat")
+                else "alt")
+    )
+
+    (if (< ?resistencia 0)
+        then (bind ?re "baix")
+        else
+            (if (< ?resistencia 2)
+                then (bind ?re "moderat")
+                else "alt")
+    )
+
+
+    (assert (nivell-fisic (equilibri ?eq) (flexibilitat ?fl) (forca ?fo) (resistencia ?re)))
+)
+
+;;; EXERCICIS RESISTENCIA
+; (defrule escollir-exercicis::exercicis-resistencia "Seleccionem els exercicis de resistencia"
+;   (bind $?obras (find-all-instances ((?inst Obra)) TRUE))
+
 ; )
 
-; (defrule info-usuari::pregunta-hipertensio "Tens la pressio alta"
-; 	?u <- (pregunta-usuari (edat ?edat) (hipertensio ?hipertensio))
-;     (test (eq ?hipertensio [nil]))
-; 	=>
-; 	(bind ?e (pregunta-si-no "Tens la pressio alta"))
-; 	(modify ?u (hipertensio ?e))
-; )
+;;; EXERCICIS FLEXIBILITAT
 
 
-
-; (defrule info-usuari::pregunta-fragilitat-2 "Recordes el que has fet aquest mati?"
-; 	?u <- (pregunta-usuari (edat ?edat))
-;     ?u <- (pregunta-usuari (fragilitat ?fragilitat))
-; 	=>
-; 	(bind ?e (or ?fragilitat  (pregunta-si-no "Recordes el que has fet aquest mati?")))
-; 	(modify ?u (fragilitat ?e))
-; )
+;;; EXERCICIS FORCA
 
 
-; (defrule recomanar-exercici::exercici-caminar "Passejar/caminar"
-;     ?u <- (pregunta-usuari (cor ?cor)
-;     (test (eq ?cor TRUE))
-;     =>
-;     (assert (solucio-dia (edat ?edat)))
-; )
+;;; EXERCICIS EQUILIBRI
 
