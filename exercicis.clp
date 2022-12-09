@@ -409,29 +409,29 @@
 )
 
 
-(deffunction filtrar-multi-por (?li ?sl ?const)
-    (bind ?encontrado FALSE)
-    (if (neq ?li FALSE) then
-        (bind ?li (create$ ?li))
-        (if (> (length ?li) 0) then
-            (loop-for-count (?i 1 (length ?li))
-                (bind $?v (send (nth$ ?i ?li) ?sl))
-                (if (member$ ?const $?v) then
-                    (if (eq ?encontrado FALSE) then
-                        (bind ?encontrado TRUE)
-                        (bind ?ins (nth$ ?i ?li))
-                        else
-                        (bind ?ins (create$ ?ins (nth$ ?i ?li)))
-                    )
-                )
-            )
-        )
-    )
-    (if (eq ?encontrado FALSE) then
-    (bind ?ins FALSE)
-    )
-    (return ?ins)
-)
+; (deffunction filtrar-multi-por (?li ?sl ?const)
+;     (bind ?encontrado FALSE)
+;     (if (neq ?li FALSE) then
+;         (bind ?li (create$ ?li))
+;         (if (> (length ?li) 0) then
+;             (loop-for-count (?i 1 (length ?li))
+;                 (bind $?v (send (nth$ ?i ?li) ?sl))
+;                 (if (member$ ?const $?v) then
+;                     (if (eq ?encontrado FALSE) then
+;                         (bind ?encontrado TRUE)
+;                         (bind ?ins (nth$ ?i ?li))
+;                         else
+;                         (bind ?ins (create$ ?ins (nth$ ?i ?li)))
+;                     )
+;                 )
+;             )
+;         )
+;     )
+;     (if (eq ?encontrado FALSE) then
+;     (bind ?ins FALSE)
+;     )
+;     (return ?ins)
+; )
 
 
 ;;***********************
@@ -604,7 +604,7 @@
     (if (< ?equilibri 0)
         then (bind ?eq "baix")
         else
-            (if (< ?equilibri 2)
+            (if (or (< ?equilibri 2) (member Artritis ?patologies))
                 then (bind ?eq "moderat")
                 else "alt")
     )
