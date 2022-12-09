@@ -315,6 +315,7 @@
 	(slot equilibri (type STRING))
 	(slot forca (type STRING))
 	(slot resistencia (type STRING))
+    (multislot recomanacions (type STRING))
 )
 
 
@@ -326,13 +327,37 @@
     (progn$
         (?var ?valors-permesos)
         (lowcase ?var))
-    (format t "¿%s? (%s) " ?pregunta (implode$ ?valors-permesos))
+    (format t "%s? (%s) " ?pregunta (implode$ ?valors-permesos))
     (bind ?resposta (read))
     (while (not (member (lowcase ?resposta) ?valors-permesos)) do
-        (format t "¿%s? (%s) " ?pregunta (implode$ ?valors-permesos))
+        (format t "%s? (%s) " ?pregunta (implode$ ?valors-permesos))
         (bind ?resposta (read))
     )
     ?resposta
+)
+
+
+;;; Funcion para hacer una pregunta multi-respuesta con indices
+(deffunction pregunta-multi (?pregunta $?valores-posibles)
+    (bind ?linea (format nil "%s" ?pregunta))
+    (printout t ?linea crlf)
+    (progn$ (?var ?valores-posibles)
+            (bind ?linea (format nil "  %d. %s" ?var-index ?var))
+            (printout t ?linea crlf)
+    )
+    (format t "%s" "Indica los numeros separados por un espacio: ")
+    (bind ?resp (readline))
+    (bind ?numeros (str-explode ?resp))
+    (bind $?lista (create$ ))
+    (progn$ (?var ?numeros)
+        (if (and (integerp ?var) (and (>= ?var 1) (<= ?var (length$ ?valores-posibles))))
+            then
+                (if (not (member$ ?var ?lista))
+                    then (bind ?lista (insert$ ?lista (+ (length$ ?lista) 1) ?var))
+                )
+        )
+    )
+    ?lista
 )
 
 
@@ -345,11 +370,23 @@
 )
 
 
+(deffunction MAIN::pregunta-si-no-depen (?pregunta)
+    (bind ?resposta (pregunta ?pregunta Si No Depen s n d))
+    (if (or (eq (lowcase ?resposta) si) (eq (lowcase ?resposta) s))
+        then 1 ; Si
+        else (if (or (eq (lowcase ?resposta) no) (eq (lowcase ?resposta) n))
+            then -1 ; No
+            else 0 ; Depen
+        )
+    )
+)
+
+
 (deffunction MAIN::pregunta-numerica (?pregunta ?rangini ?rangfi)
-    (format t "¿%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
+    (format t "%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
     (bind ?resposta (read))
     (while (not(and(> ?resposta ?rangini)(< ?resposta ?rangfi))) do
-        (format t "¿%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
+        (format t "%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
         (bind ?resposta (read))
     )
     ?resposta
@@ -359,26 +396,36 @@
 ;;***********************
 ;;** MODUL INFO USUARI **
 ;;***********************
-(defrule info-usuari::pregunta-edat "Quina edat tens?"
+(defrule info-usuari::pregunta-edat "Quina edat tens"
 	(not (pregunta-usuari))
 	=>
-	(bind ?edat (pregunta-numerica "Quina edat tens? " 65 150 ))
+	(bind ?edat (pregunta-numerica "Quina edat tens" 65 150 ))
 	(assert (pregunta-usuari (edat ?edat)))
 )
 
-(defrule info-usuari::pregunta-cor "Tens algun problema al cor?"
+(defrule info-usuari::pregunta-cor "Tens algun problema al cor"
 	?u <- (pregunta-usuari (edat ?edat) (cor ?cor))
     (test (> ?edat 0))
     (test (eq ?cor [nil]))
 	=>
-	(bind ?e (pregunta-si-no "Tens algun problema al cor?"))
+	(bind ?e (pregunta-si-no "Tens algun problema al cor"))
 	(modify ?u (cor ?e))
 )
 
-; (defrule info-usuari::pregunta-fragilitat "Caus sovint?"
+(defrule info-usuari::pregunta-escales "Et canses molt pujant escales"
+	?u <- (pregunta-usuari (cor ?cor))
+    (not (nivell-fisic))
+    (test (not(eq ?cor [nil])))
+    (test (not(eq ?cor FALSE)))
+	=>
+    (bind ?resistencia (pregunta-si-no-depen "Et canses molt pujant escales"))
+	(assert (nivell-fisic (resistencia ?resistencia)))
+)
+
+; (defrule info-usuari::pregunta-fragilitat "Caus sovint"
 ; 	?u <- (pregunta-usuari (edat ?edat))
 ; 	=>
-; 	(bind ?e (pregunta-si-no "Caus sovint?"))
+; 	(bind ?e (pregunta-si-no "Caus sovint"))
 ; 	(modify ?u (fragilitat ?e))
 ; )
 
@@ -391,5 +438,10 @@
 ; )
 
 
-
+; (defrule recomanar-exercici::exercici-caminar "Passejar/caminar"
+;     ?u <- (pregunta-usuari (cor ?cor)
+;     (test (eq ?cor TRUE))
+;     =>
+;     (assert (solucio-dia (edat ?edat)))
+; )
 
