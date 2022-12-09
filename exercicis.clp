@@ -312,7 +312,7 @@
     (slot correr (type SYMBOL))
     (slot nedar (type SYMBOL))
     (slot protesis-maluc (type SYMBOL))
-    (multislot patologies (type INSTANCE))
+    (multislot patologies (type STRING))
 )
 
 ;;; Template per el nivell fisic de la persona
@@ -329,6 +329,10 @@
 	(slot equilibri (type STRING))
 	(slot forca (type STRING))
 	(slot resistencia (type STRING))
+)
+
+(deftemplate MAIN::solucio-abst
+    (multislot exercicis (type STRING))
 )
 
 
@@ -470,14 +474,6 @@
     (assert (pregunta-patologies-feta))
 )
 
-; (defrule info-usuari::pregunta-cor "Tens algun problema al cor"
-; 	?u <- (pregunta-usuari (edat ?edat) (cor ?cor))
-;     (test (> ?edat 0))
-;     (test (eq ?cor [nil]))
-; 	=>
-; 	(bind ?e (pregunta-si-no "Tens algun problema al cor"))
-; 	(modify ?u (cor ?e))
-; )
 
 ;;; PREGUNTES RESISTENCIA
 (defrule info-usuari::pregunta-escales "Et canses molt pujant escales"
@@ -598,43 +594,56 @@
 
 (defrule abstraccio::abstraccio-nivell-problema "Abstraiem el problema"
     ?u <- (punts-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
-    ?v <- (pregunta-usuari (patologies ?patologies))
+    ?v <- (pregunta-usuari (patologies $?patologies))
     (not (nivell-fisic))
     =>
+
     (if (< ?equilibri 0)
         then (bind ?eq "baix")
         else
-            (if (or (< ?equilibri 2) (member Artritis ?patologies))
+            (if (or (< ?equilibri 2) (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Sobrepes] $?patologies))
                 then (bind ?eq "moderat")
-                else "alt")
+                else (bind ?eq "alt"))
     )
 
     (if (< ?flexibilitat 0)
         then (bind ?fl "baix")
         else
-            (if (< ?flexibilitat 2)
+            (if (or (< ?flexibilitat 2) (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies))
                 then (bind ?fl "moderat")
-                else "alt")
+                else (bind ?fl "alt"))
     )
 
     (if (< ?forca 0)
         then (bind ?fo "baix")
         else
-            (if (< ?forca 2)
+            (if (or (< ?forca 2) (member [Cardiovascular] $?patologies) (member [Diabetis] $?patologies) (member [Hipertensio] $?patologies) (member [Malaltia_pulmonar] $?patologies) (member [Sobrepes] $?patologies))
                 then (bind ?fo "moderat")
-                else "alt")
+                else (bind ?fo "alt"))
     )
 
     (if (< ?resistencia 0)
         then (bind ?re "baix")
         else
-            (if (< ?resistencia 2)
+            (if (or (< ?resistencia 2) (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies))
                 then (bind ?re "moderat")
-                else "alt")
+                else (bind ?re "alt"))
     )
 
-
     (assert (nivell-fisic (equilibri ?eq) (flexibilitat ?fl) (forca ?fo) (resistencia ?re)))
+)
+
+(defrule abstraccio::relacio-exercicis "solucio abstracta"
+    ?u <- (nivell-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
+    =>
+    (bind $?obj-exercicis (find-all-instances ((?inst Exercici)) TRUE))
+    (bind $?nom-exercicis (create$ ))
+	(loop-for-count (?i 1 (length$ $?obj-exercicis)) do
+		(bind ?curr-obj (nth$ ?i ?obj-exercicis))
+		(bind ?curr-nom (send ?curr-obj get-nom))
+		(bind $?nom-exercicis(insert$ $?nom-exercicis (+ (length$ $?nom-exercicis) 1) ?curr-nom))
+	)
+    (assert (solucio-abst (exercici $?nom-exercicis)))
 )
 
 ;;; EXERCICIS RESISTENCIA
