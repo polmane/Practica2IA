@@ -295,6 +295,11 @@
 	(export ?ALL)
 )
 
+(defmodule imprimir
+		(import MAIN ?ALL)
+)
+
+
 (defrule MAIN::initialRule "regla inicial"
 	(declare (salience 10))
 	=>
@@ -657,11 +662,48 @@
           (send ?sol put-composta_per $?llista)
           (send ?sol put-dia_solucio ?i)
      )
+     (focus imprimir)
 
 )
 
+	(deftemplate imprimir::min
+		(slot count (type INTEGER))
+		)
+
+	(deffacts imprimir::hechos-iniciales
+		(min (count 1))
+	)
+
+	(defrule imprimir::inicial "regla inicial"
+		(declare (salience 10))
+		=>
+		(printout t crlf)
+		(printout t "-----------------------------------------------------------------" crlf)
+		(printout t "-------------------- Exercicis Personalitzats -------------------" crlf)
+		(printout t "-----------------------------------------------------------------" crlf)
+		(printout t "-----------------------------------------------------------------" crlf)
+		(printout t crlf)
+	)
 
 
-
-
-
+	(defrule imprimir::imprimir-dia
+		?min <- (min (count ?n))
+		?Dia <- (object (is-a Solucio) (dia_solucio ?numDia))
+		(test (eq ?n ?numDia))
+		=>
+		(format t "Els exercicis a fer el dia %d son:" ?n)
+		(printout t crlf)
+		(printout t "-------------------------------------------------------------" crlf)
+		(printout t crlf)
+		(bind $?exercicis(send ?Dia get-composta_per))
+		(loop-for-count (?i 1 (length$ $?exercicis)) do
+				(bind ?curr-ex (nth$ ?i $?exercicis))
+				(bind ?nom-exercicis (send ?curr-ex get-nom))
+;;;				(printout t crlf)
+				(format t "%s - 15 min" ?nom-exercicis)
+				(printout t crlf)
+		)
+		(printout t crlf)
+		(assert (min (count (+ ?n 1))))
+		(retract ?min)
+	)
