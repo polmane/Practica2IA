@@ -1,4 +1,3 @@
 En aquest prototip inicial primer fem preguntes de l'edat, les patologies i el nivell fisic de la persona (problema concret).
 Seguidament el transformem en un problema abstracte on els nivells fisics de la persona queden condicionats tant per les respostes a les preguntes de que es veu capaç de fer la persona com per les patologies.
 La solucio abstracte i solucio concreta tenen una part de aleatoria, pero genera un planing d'exercicis amb activitat per de 3 a 7 dies depenent de l'ocasio i tambe respecta la durada de cada dia, entre 30 i 90 minuts.
-La solucio concreta no s'imprimeix per pantalla, es queda a la finestra de instancies.
