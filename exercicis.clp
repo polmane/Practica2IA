@@ -290,6 +290,11 @@
 	(export ?ALL)
 )
 
+(defmodule sintesi
+	(import MAIN ?ALL)
+	(export ?ALL)
+)
+
 (defrule MAIN::initialRule "regla inicial"
 	(declare (salience 10))
 	=>
@@ -412,30 +417,18 @@
     ?resposta
 )
 
+(deffunction MAIN::random-slot ( ?li )
+     (bind ?li (create$ ?li))
+     (bind ?max (length ?li))
+     (bind ?r (random 1 ?max))
+     (bind ?ins (nth$ ?r ?li))
+     (return ?ins)
+)
 
-; (deffunction filtrar-multi-por (?li ?sl ?const)
-;     (bind ?encontrado FALSE)
-;     (if (neq ?li FALSE) then
-;         (bind ?li (create$ ?li))
-;         (if (> (length ?li) 0) then
-;             (loop-for-count (?i 1 (length ?li))
-;                 (bind $?v (send (nth$ ?i ?li) ?sl))
-;                 (if (member$ ?const $?v) then
-;                     (if (eq ?encontrado FALSE) then
-;                         (bind ?encontrado TRUE)
-;                         (bind ?ins (nth$ ?i ?li))
-;                         else
-;                         (bind ?ins (create$ ?ins (nth$ ?i ?li)))
-;                     )
-;                 )
-;             )
-;         )
-;     )
-;     (if (eq ?encontrado FALSE) then
-;     (bind ?ins FALSE)
-;     )
-;     (return ?ins)
-; )
+
+
+
+
 
 
 ;;***********************
@@ -635,28 +628,40 @@
 
 (defrule abstraccio::relacio-exercicis "solucio abstracta"
     ?u <- (nivell-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
+      ; cada ex dura 15 min
     =>
     (bind $?obj-exercicis (find-all-instances ((?inst Exercici)) TRUE))
     (bind $?nom-exercicis (create$ ))
 	(loop-for-count (?i 1 (length$ $?obj-exercicis)) do
 		(bind ?curr-obj (nth$ ?i ?obj-exercicis))
-		(bind ?curr-nom (send ?curr-obj get-nom))
-		(bind $?nom-exercicis(insert$ $?nom-exercicis (+ (length$ $?nom-exercicis) 1) ?curr-nom))
+          (send ?curr-obj put-es_realitza 15)
 	)
-    (assert (solucio-abst (exercici $?nom-exercicis)))
+     (focus sintesi)
 )
 
-;;; EXERCICIS RESISTENCIA
-; (defrule escollir-exercicis::exercicis-resistencia "Seleccionem els exercicis de resistencia"
-;   (bind $?obras (find-all-instances ((?inst Obra)) TRUE))
+(defrule sintesi::solRand "solucio aleatoria"
+     (declare (salience 100))
+     =>
+     (bind ?mindia (+ (mod (random) 61) 30))
+     (bind ?ndies (+ (mod (random) 5) 3))
+     (bind ?exsdia (/ ?mindia 15))     ; cada ex dura 15 min
+     (bind $?exs (find-all-instances ((?inst Exercici)) TRUE))
 
-; )
+     (loop-for-count (?i 1 ?ndies) do
+          (bind ?llista (create$))
+          (bind ?sol (make-instance (sym-cat dia- (gensym)) of Solucio))
+          (loop-for-count (?j 1 ?exsdia) do
+               (bind ?rd (random-slot $?exs))
+               (bind $?llista (insert$ $?llista (+ (length$ $?llista) 1) ?rd))
+          )
+          (send ?sol put-composta_per $?llista)
+          (send ?sol put-dia_solucio ?i)
+     )
 
-;;; EXERCICIS FLEXIBILITAT
+)
 
 
-;;; EXERCICIS FORCA
 
 
-;;; EXERCICIS EQUILIBRI
+
 
