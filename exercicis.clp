@@ -456,8 +456,28 @@
      (return ?ins)
 )
 
+(deffunction analisi::realitzacio (?tipus ?nivell)
+    (bind $?obj-exs (find-all-instances ((?inst ?tipus)) TRUE))
+    (loop-for-count (?i 1 (length$ $?obj-exs)) do
+		(bind ?curr-obj (nth$ ?i ?obj-exs))
+        (if (eq ?nivell "baix")
+            then (if (eq ?tipus Resistencia)
+                    then (send ?curr-obj put-es_realitza [15min])
+                    else (send ?curr-obj put-es_realitza [6min])) 
+            else (if (eq ?nivell "moderat")
+                    then (
+                        if (eq ?tipus Resistencia)
+                            then (send ?curr-obj put-es_realitza [25min])
+                            else (send ?curr-obj put-es_realitza [8min]))
+                    else 
+                        (if (eq ?tipus Resistencia)
+                            then (send ?curr-obj put-es_realitza [40min])
+                            else (send ?curr-obj put-es_realitza [10min]))
 
-
+                )              
+        )
+    )
+)
 
 
 
@@ -465,6 +485,7 @@
 ;;***********************
 ;;** MODUL INFO USUARI **
 ;;***********************
+
 (defrule info-usuari::pregunta-edat "Quina edat tens"
 	(not (pregunta-usuari))
 	=>
@@ -699,7 +720,6 @@
     (if (> ?edat 85)
         then (bind ?m 30)
             (bind ?d 5)
-        
     )
 
     (if (eq ?total "moderat")
@@ -717,35 +737,11 @@
 (defrule analisi::asociacio_heuristica "asociacio heuristica"
     (nivell-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
     =>
-    (bind $?obj-exs (find-all-instances ((?inst Resistencia)) TRUE))
-    (loop-for-count (?i 1 (length$ $?obj-exs)) do
-		(bind ?curr-obj (nth$ ?i ?obj-exs))
-        (if (eq ?resistencia "moderat")
-        then (bind ?m (+ ?m 10))
-                (bind ?d (+ ?d 1))
-        
-        else (if (eq ?total "alt")
-            then (bind ?m (+ ?m 20))
-                    (bind ?d (+ ?d 2))
-        )
-    )
-          (send ?curr-obj put-es_realitza 1)
-	)
-    ; (bind $?obj-exs (find-all-instances ((?inst Exercici)) TRUE))
-    ; (loop-for-count (?i 1 (length$ $?obj-exs)) do
-	; 	(bind ?curr-obj (nth$ ?i ?obj-exs))
-    ;       (send ?curr-obj put-es_realitza 1)
-	; )
-    ; (bind $?obj-exs (find-all-instances ((?inst Exercici)) TRUE))
-    ; (loop-for-count (?i 1 (length$ $?obj-exs)) do
-	; 	(bind ?curr-obj (nth$ ?i ?obj-exs))
-    ;       (send ?curr-obj put-es_realitza 1)
-	; )
-    ; (bind $?obj-exs (find-all-instances ((?inst Exercici)) TRUE))
-    ; (loop-for-count (?i 1 (length$ $?obj-exs)) do
-	; 	(bind ?curr-obj (nth$ ?i ?obj-exs))
-    ;       (send ?curr-obj put-es_realitza 1)
-	; )
+    (realitzacio Resistencia ?resistencia)
+    (realitzacio Equilibri ?equilibri)
+    (realitzacio Flexibilitat ?flexibilitat)
+    (realitzacio Fortalesa ?forca)
+ 
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
