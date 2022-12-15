@@ -166,6 +166,7 @@
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Aixecament_lateral_cama
 :Aixecament_lateral_cama rdf:type owl:NamedIndividual ,
+                                  :Equilibri ,
                                   :FortalesaEquilibri ;
                          :nom "Aixecament lateral de cames" .
 
@@ -274,6 +275,7 @@
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Extensio_maluc
 :Extensio_maluc rdf:type owl:NamedIndividual ,
+                         :Equilibri ,
                          :FortalesaEquilibri ;
                 :nom "Extensio de maluc" .
 
@@ -286,6 +288,7 @@
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Felxio_plantar
 :Felxio_plantar rdf:type owl:NamedIndividual ,
+                         :Equilibri ,
                          :FortalesaEquilibri ;
                 :nom "Flexio plantar" .
 
@@ -298,12 +301,14 @@
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Flexio_genoll
 :Flexio_genoll rdf:type owl:NamedIndividual ,
+                        :Equilibri ,
                         :FortalesaEquilibri ;
                :nom "Flexio de genoll" .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Flexio_maluc
 :Flexio_maluc rdf:type owl:NamedIndividual ,
+                       :Equilibri ,
                        :FortalesaEquilibri ;
               :nom "Flexio de maluc" .
 
@@ -378,6 +383,42 @@
 :Sobrepes rdf:type owl:NamedIndividual ,
                    :Patologia ;
           :nom "Sobrepes" .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#10min
+<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#10min> rdf:type owl:NamedIndividual ,
+                                                                                           :Realitzacio ;
+                                                                                  :duracio 10 .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#15min
+<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#15min> rdf:type owl:NamedIndividual ,
+                                                                                           :Realitzacio ;
+                                                                                  :duracio 15 .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#25min
+<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#25min> rdf:type owl:NamedIndividual ,
+                                                                                           :Realitzacio ;
+                                                                                  :duracio 25 .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#40min
+<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#40min> rdf:type owl:NamedIndividual ,
+                                                                                           :Realitzacio ;
+                                                                                  :duracio 40 .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#6min
+<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#6min> rdf:type owl:NamedIndividual ,
+                                                                                          :Realitzacio ;
+                                                                                 :duracio 6 .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#8min
+<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#8min> rdf:type owl:NamedIndividual ,
+                                                                                          :Realitzacio ;
+                                                                                 :duracio 8 .
 
 
 #################################################################

@@ -2,7 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology ontologia.owl
-;;; :Date 09/12/2022 00:07:39
+;;; :Date 15/12/2022 02:38:53
 
 (defclass Exercici
     (is-a USER)
@@ -252,6 +252,30 @@
 
     ([Sobrepes] of Patologia
          (nom  "Sobrepes")
+    )
+
+    ([10min] of Realitzacio
+         (duracio  10)
+    )
+
+    ([15min] of Realitzacio
+         (duracio  15)
+    )
+
+    ([25min] of Realitzacio
+         (duracio  25)
+    )
+
+    ([40min] of Realitzacio
+         (duracio  40)
+    )
+
+    ([6min] of Realitzacio
+         (duracio  6)
+    )
+
+    ([8min] of Realitzacio
+         (duracio  8)
     )
 
 )

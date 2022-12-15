@@ -254,6 +254,30 @@
          (nom  "Sobrepes")
     )
 
+    ([10min] of Realitzacio
+         (duracio  10)
+    )
+
+    ([15min] of Realitzacio
+         (duracio  15)
+    )
+
+    ([25min] of Realitzacio
+         (duracio  25)
+    )
+
+    ([40min] of Realitzacio
+         (duracio  40)
+    )
+
+    ([6min] of Realitzacio
+         (duracio  6)
+    )
+
+    ([8min] of Realitzacio
+         (duracio  8)
+    )
+
 )
 
 
@@ -284,8 +308,8 @@
 	(export ?ALL)
 )
 
-;;; Modul d abstraccio
-(defmodule abstraccio
+;;; Modul d analisi
+(defmodule analisi
 	(import MAIN ?ALL)
 	(export ?ALL)
 )
@@ -339,10 +363,12 @@
 	(slot equilibri (type STRING))
 	(slot forca (type STRING))
 	(slot resistencia (type STRING))
+    (slot total (type STRING))
 )
 
-(deftemplate MAIN::solucio-abst
-    (multislot exercicis (type STRING))
+(deftemplate MAIN::temporal
+    (slot num_dies (type INTEGER))
+    (slot minuts_dia (type INTEGER))
 )
 
 
@@ -391,7 +417,7 @@
 
 
 (deffunction MAIN::pregunta-si-no (?pregunta)
-    (bind ?resposta (pregunta ?pregunta Si No s n))
+    (bind ?resposta (pregunta ?pregunta si no s n))
     (if (or (eq (lowcase ?resposta) si) (eq (lowcase ?resposta) s))
         then TRUE
         else FALSE
@@ -400,7 +426,7 @@
 
 
 (deffunction MAIN::pregunta-si-no-depen (?pregunta)
-    (bind ?resposta (pregunta ?pregunta Si No Depen s n d))
+    (bind ?resposta (pregunta ?pregunta si no depen s n d))
     (if (or (eq (lowcase ?resposta) si) (eq (lowcase ?resposta) s))
         then 1 ; Si
         else (if (or (eq (lowcase ?resposta) no) (eq (lowcase ?resposta) n))
@@ -414,7 +440,7 @@
 (deffunction MAIN::pregunta-numerica (?pregunta ?rangini ?rangfi)
     (format t "%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
     (bind ?resposta (read))
-    (while (not(and(> ?resposta ?rangini)(< ?resposta ?rangfi))) do
+    (while (not(and(>= ?resposta ?rangini)(<= ?resposta ?rangfi))) do
         (format t "%s? [%d, %d] " ?pregunta ?rangini ?rangfi)
         (bind ?resposta (read))
     )
@@ -587,10 +613,10 @@
     (bind ?e (pregunta-si-no "Tens protesi de maluc"))
 	(modify ?u (protesis-maluc ?e))
     (assert (pregunta-protesis-maluc-feta))
-    (focus abstraccio)
+    (focus analisi)
 )
 
-(defrule abstraccio::abstraccio-nivell-problema "Abstraiem el problema"
+(defrule analisi::abstraccio-nivell-problema "Abstraiem el problema"
     ?u <- (punts-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
     ?v <- (pregunta-usuari (patologies $?patologies))
     (not (nivell-fisic))
@@ -615,7 +641,7 @@
     (if (< ?forca 0)
         then (bind ?fo "baix")
         else
-            (if (or (< ?forca 2) (member [Cardiovascular] $?patologies) (member [Diabetis] $?patologies) (member [Hipertensio] $?patologies) (member [Malaltia_pulmonar] $?patologies) (member [Sobrepes] $?patologies))
+            (if (or (< ?forca 2) (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies))
                 then (bind ?fo "moderat")
                 else (bind ?fo "alt"))
     )
@@ -623,15 +649,111 @@
     (if (< ?resistencia 0)
         then (bind ?re "baix")
         else
-            (if (or (< ?resistencia 2) (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies))
+            (if (or (< ?resistencia 2) (member [Cardiovascular] $?patologies) (member [Diabetis] $?patologies) (member [Hipertensio] $?patologies) (member [Malaltia_pulmonar] $?patologies) (member [Sobrepes] $?patologies))
                 then (bind ?re "moderat")
                 else (bind ?re "alt"))
     )
+    (bind ?total_num (+ ?equilibri ?forca ?flexibilitat ?resistencia))
 
-    (assert (nivell-fisic (equilibri ?eq) (flexibilitat ?fl) (forca ?fo) (resistencia ?re)))
+    (if (< ?total_num -2)
+        then (bind ?total "baix")
+        else
+            (if (< ?total_num 4)
+                then (bind ?total "moderat")
+                else (bind ?total "alt"))
+    )
+    (assert (nivell-fisic (equilibri ?eq) (flexibilitat ?fl) (forca ?fo) (resistencia ?re) (total ?total)))
 )
 
-(defrule abstraccio::relacio-exercicis "solucio abstracta"
+(defrule analisi::prioritat_tipus "Exercicis amb prioritat per culpa de la patologia"
+     ?r <- (punts-fisic)
+    (pregunta-usuari (patologies $?patologies))
+    (not (prioritat_tipus_feta))
+    =>
+    
+    (bind $?llista (create$))
+    (if (or (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies))
+         then (bind $?llista (insert$ $?llista 1 "forca"))
+             (bind $?llista (insert$ $?llista 1 "flexibilitat"))
+     )
+
+    (if (or (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Sobrepes] $?patologies))
+        then (bind $?llista (insert$ $?llista 1 "equilibri"))
+    )
+
+    (if (or (member [Cardiovascular] $?patologies) (member [Diabetis] $?patologies) (member [Hipertensio] $?patologies) (member [Malaltia_pulmonar] $?patologies) (member [Sobrepes] $?patologies))
+        then (bind $?llista (insert$ $?llista 1 "resistencia"))
+    )
+    (modify ?r (recomanacions $?llista))
+    (assert (prioritat_tipus_feta))
+)
+
+(defrule analisi::temps_solucio "Calculem quantitat de dies i minuts per dia "
+    ?n <- (nivell-fisic (total ?total))
+    ?e <- (pregunta-usuari (edat ?edat))
+    (not (temporal))
+    =>
+    (bind ?m (+ (* -2 ?edat) 200))
+    (bind ?d (div (- (* 0.1 ?edat) 3.5) 1))
+    
+    (if (> ?edat 85)
+        then (bind ?m 30)
+            (bind ?d 5)
+        
+    )
+
+    (if (eq ?total "moderat")
+        then (bind ?m (+ ?m 10))
+                (bind ?d (+ ?d 1))
+        
+        else (if (eq ?total "alt")
+            then (bind ?m (+ ?m 20))
+                    (bind ?d (+ ?d 2))
+        )
+    )
+    (assert (temporal (num_dies ?d) (minuts_dia ?m)))
+)
+
+(defrule analisi::asociacio_heuristica "asociacio heuristica"
+    (nivell-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
+    =>
+    (bind $?obj-exs (find-all-instances ((?inst Resistencia)) TRUE))
+    (loop-for-count (?i 1 (length$ $?obj-exs)) do
+		(bind ?curr-obj (nth$ ?i ?obj-exs))
+        (if (eq ?resistencia "moderat")
+        then (bind ?m (+ ?m 10))
+                (bind ?d (+ ?d 1))
+        
+        else (if (eq ?total "alt")
+            then (bind ?m (+ ?m 20))
+                    (bind ?d (+ ?d 2))
+        )
+    )
+          (send ?curr-obj put-es_realitza 1)
+	)
+    ; (bind $?obj-exs (find-all-instances ((?inst Exercici)) TRUE))
+    ; (loop-for-count (?i 1 (length$ $?obj-exs)) do
+	; 	(bind ?curr-obj (nth$ ?i ?obj-exs))
+    ;       (send ?curr-obj put-es_realitza 1)
+	; )
+    ; (bind $?obj-exs (find-all-instances ((?inst Exercici)) TRUE))
+    ; (loop-for-count (?i 1 (length$ $?obj-exs)) do
+	; 	(bind ?curr-obj (nth$ ?i ?obj-exs))
+    ;       (send ?curr-obj put-es_realitza 1)
+	; )
+    ; (bind $?obj-exs (find-all-instances ((?inst Exercici)) TRUE))
+    ; (loop-for-count (?i 1 (length$ $?obj-exs)) do
+	; 	(bind ?curr-obj (nth$ ?i ?obj-exs))
+    ;       (send ?curr-obj put-es_realitza 1)
+	; )
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defrule sintesi::relacio-exercicis "solucio abstracta"
     ?u <- (nivell-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
       ; cada ex dura 15 min
     =>
@@ -641,7 +763,7 @@
 		(bind ?curr-obj (nth$ ?i ?obj-exercicis))
           (send ?curr-obj put-es_realitza 15)
 	)
-     (focus sintesi)
+    ;; (focus sintesi)
 )
 
 (defrule sintesi::solRand "solucio aleatoria"
