@@ -1,6 +1,6 @@
 # Practica2IA
 
-* Link a la documentacio:?
+* Link a la documentacio: https://www.overleaf.com/project/639dbeec930f3c7507be5b52
 * DOCS conté els documents amb els quals ens vam fer experts<br />
 * ontologia.owl és la ontologia feta amb Protegé<br />
 * PracticaSBC és l'enunciat<br />
@@ -28,7 +28,7 @@ precisas.
 
 #### Identificació
 - [x] La descripción del problema es algo más elaborada que la que ya hay en el enunciado
-- [ ] Análisis detallado de la viabilidad de construir el SBC
+- [x] Análisis detallado de la viabilidad de construir el SBC
 - [ ] Identificación de las fuentes de conocimiento
 - [x] Descripción clara de los objetivos del problema y los resultados del sistema
 
