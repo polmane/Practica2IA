@@ -18,8 +18,8 @@
 precisas.
 - [ ] El documento no tiene faltas de ortografía, ni errores gramaticales.
 - [x] El documento está organizado de forma lógica.
-- [ ] Las diferentes secciones y subsecciones están bien ligadas, y facilitan el seguimiento del contenido.
-- [ ] El documento en una primera parte plantea el problema, en una segunda desarrolla y elabora la solución y en una tercera resume los resultados y plantea las conclusiones.
+- [x] Las diferentes secciones y subsecciones están bien ligadas, y facilitan el seguimiento del contenido.
+- [x] El documento en una primera parte plantea el problema, en una segunda desarrolla y elabora la solución y en una tercera resume los resultados y plantea las conclusiones.
 - [ ] Los contenidos son muy claros. Las frases son cortas y fáciles de entender a la primera.
 
 #### Gràfics
