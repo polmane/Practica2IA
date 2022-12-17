@@ -320,7 +320,7 @@
 )
 
 (defmodule imprimir
-		(import MAIN ?ALL)
+	(import MAIN ?ALL)
 )
 
 
@@ -355,7 +355,7 @@
 	(slot equilibri (type INTEGER) (default 0))
 	(slot forca (type INTEGER) (default 0))
 	(slot resistencia (type INTEGER) (default 0))
-    (multislot recomanacions (type STRING))
+    (slot total (type INTEGER) (default 0))
 )
 
 (deftemplate MAIN::nivell-fisic
@@ -364,6 +364,7 @@
 	(slot forca (type STRING))
 	(slot resistencia (type STRING))
     (slot total (type STRING))
+    (multislot recomanacions (type STRING))
 )
 
 (deftemplate MAIN::temporal
@@ -499,22 +500,22 @@
 	=>
 	(bind ?e (pregunta-si-no "Tens alguna patologia en concret"))
 	(if (eq ?e TRUE)
-	then (bind $?obj-patologies (find-all-instances ((?inst Patologia)) TRUE))
-	(bind $?nom-patologies (create$ ))
-	(loop-for-count (?i 1 (length$ $?obj-patologies)) do
-		(bind ?curr-obj (nth$ ?i ?obj-patologies))
-		(bind ?curr-nom (send ?curr-obj get-nom))
-		(bind $?nom-patologies(insert$ $?nom-patologies (+ (length$ $?nom-patologies) 1) ?curr-nom))
-	)
-	(bind ?escogido (pregunta-multi "Escull les patologies que tens: " $?nom-patologies))
+        then (bind $?obj-patologies (find-all-instances ((?inst Patologia)) TRUE))
+        (bind $?nom-patologies (create$ ))
+        (loop-for-count (?i 1 (length$ $?obj-patologies)) do
+            (bind ?curr-obj (nth$ ?i ?obj-patologies))
+            (bind ?curr-nom (send ?curr-obj get-nom))
+            (bind $?nom-patologies(insert$ $?nom-patologies (+ (length$ $?nom-patologies) 1) ?curr-nom))
+        )
+        (bind ?escogido (pregunta-multi "Escull les patologies que tens: " $?nom-patologies))
 
-	(bind $?respuesta (create$ ))
-	(loop-for-count (?i 1 (length$ ?escogido)) do
-		(bind ?curr-index (nth$ ?i ?escogido))
-		(bind ?curr-atr (nth$ ?curr-index ?obj-patologies))
-		(bind $?respuesta(insert$ $?respuesta (+ (length$ $?respuesta) 1) ?curr-atr))
-	)
-	(modify ?pref (patologies $?respuesta))
+        (bind $?respuesta (create$ ))
+        (loop-for-count (?i 1 (length$ ?escogido)) do
+            (bind ?curr-index (nth$ ?i ?escogido))
+            (bind ?curr-atr (nth$ ?curr-index ?obj-patologies))
+            (bind $?respuesta(insert$ $?respuesta (+ (length$ $?respuesta) 1) ?curr-atr))
+        )
+        (modify ?pref (patologies $?respuesta))
 	)
     (assert (pregunta-patologies-feta))
 )
@@ -527,81 +528,81 @@
     (not (pregunta-escales-feta))
 	=>
     (bind ?e (pregunta-si-no-depen "Et canses molt pujant escales"))
-	(assert (punts-fisic (resistencia (* ?e -1))))
+	(assert (punts-fisic (resistencia (* ?e -1)) (total (* ?e -1))))
     (assert (pregunta-escales-feta))
 )
 
 (defrule info-usuari::pregunta-caminar "Surts a caminar diariament"
-    ?u <- (punts-fisic (resistencia ?resistencia))
+    ?u <- (punts-fisic (resistencia ?resistencia) (total ?total))
     (pregunta-escales-feta)
     (not (pregunta-caminar-feta))
 	=>
     (bind ?e (pregunta-si-no-depen "Surts a caminar diariament"))
-	(modify ?u (resistencia (+ ?e ?resistencia)))
+	(modify ?u (resistencia (+ ?e ?resistencia)) (total (+ ?e ?total)))
     (assert (pregunta-caminar-feta))
 )
 
 ;;; PREGUNTES FLEXIBILITAT
 (defrule info-usuari::pregunta-sabates "Et pots cordar les sabates sense ajuda"
-    ?u <- (punts-fisic)
+    ?u <- (punts-fisic (total ?total))
     (pregunta-caminar-feta)
     (not (pregunta-sabates-feta))
 	=>
     (bind ?e (pregunta-si-no-depen "Et pots cordar les sabates sense ajuda"))
-	(modify ?u (flexibilitat ?e))
+	(modify ?u (flexibilitat ?e) (total (+ ?e ?total)))
     (assert (pregunta-sabates-feta))
 )
 
 (defrule info-usuari::pregunta-vestirte "Pots vestir-te sol/a"
-    ?u <- (punts-fisic (flexibilitat ?flexibilitat))
+    ?u <- (punts-fisic (flexibilitat ?flexibilitat) (total ?total))
     (pregunta-sabates-feta)
     (not (pregunta-vestirte-feta))
 	=>
     (bind ?e (pregunta-si-no-depen "Pots vestir-te sol/a"))
-	(modify ?u (flexibilitat (+ ?e ?flexibilitat)))
+	(modify ?u (flexibilitat (+ ?e ?flexibilitat)) (total (+ ?e ?total)))
     (assert (pregunta-vestirte-feta))
 )
 
 ;;; PREGUNTES FORCA
 (defrule info-usuari::pregunta-cadira "Pots aixecar-te de la cadira"
-    ?u <- (punts-fisic)
+    ?u <- (punts-fisic (total ?total))
     (pregunta-vestirte-feta)
     (not (pregunta-cadira-feta))
 	=>
     (bind ?e (pregunta-si-no-depen "Pots aixecar-te de la cadira"))
-	(modify ?u (forca ?e))
+	(modify ?u (forca ?e) (total (+ ?e ?total)))
     (assert (pregunta-cadira-feta))
 )
 
 (defrule info-usuari::pregunta-garrafa "Pots aixecar una garrafa de 8L"
-    ?u <- (punts-fisic (forca ?forca))
+    ?u <- (punts-fisic (forca ?forca) (total ?total))
     (pregunta-cadira-feta)
     (not (pregunta-garrafa-feta))
 	=>
     (bind ?e (pregunta-si-no-depen "Pots aixecar una garrafa de 8L"))
-	(modify ?u (forca (+ ?e ?forca)))
+	(modify ?u (forca (+ ?e ?forca)) (total (+ ?e ?total)))
     (assert (pregunta-garrafa-feta))
 )
 
 
 ;;; PREGUNTES EQUILIBRI
 (defrule info-usuari::pregunta-suport "Utilitzes algun suport d equilibri per caminar"
-    ?u <- (punts-fisic)
+    ?u <- (punts-fisic (total ?total))
     (pregunta-garrafa-feta)
     (not (pregunta-suport-feta))
 	=>
     (bind ?e (pregunta-si-no-depen "Utilitzes algun suport d equilibri per caminar"))
-	(modify ?u (equilibri (* ?e -1)))
+	(modify ?u (equilibri (* ?e -1)) (total (+ (* ?e -1) ?total)))
     (assert (pregunta-suport-feta))
 )
 
 (defrule info-usuari::pregunta-baixant "Et sents segur baixant escales"
-    ?u <- (punts-fisic (equilibri ?equilibri))
+    ?u <- (punts-fisic (equilibri ?equilibri) (total ?total))
     (pregunta-suport-feta)
     (not (pregunta-baixant-feta))
 	=>
     (bind ?e (pregunta-si-no-depen "Et sents segur baixant escales"))
-	(modify ?u (equilibri (+ ?e ?equilibri)))
+	(modify ?u (equilibri (+ ?e ?equilibri)) (total (+ ?e ?total)))
     (assert (pregunta-baixant-feta))
 )
 
@@ -637,77 +638,305 @@
     (focus analisi)
 )
 
-(defrule analisi::abstraccio-nivell-problema "Abstraiem el problema"
-    ?u <- (punts-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
-    ?v <- (pregunta-usuari (patologies $?patologies))
-    (not (nivell-fisic))
-    =>
 
-    (if (< ?equilibri 0)
-        then (bind ?eq "baix")
-        else
-            (if (or (< ?equilibri 2) (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Sobrepes] $?patologies))
-                then (bind ?eq "moderat")
-                else (bind ?eq "alt"))
-    )
+;;;;;;;;;;;;;;; EQUILIBRI ABSTRACCIO PROBLEMA
+(defrule analisi::abstraccio-nivell-equilibri-baix "mirem si es nivell d equilibri baix"
+    (punts-fisic (equilibri ?equilibri))
+    (not (abstraccio-nivell-equilibri-feta))
+    (test (< ?equilibri 0))
 
-    (if (< ?flexibilitat 0)
-        then (bind ?fl "baix")
-        else
-            (if (or (< ?flexibilitat 2) (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies))
-                then (bind ?fl "moderat")
-                else (bind ?fl "alt"))
-    )
-
-    (if (< ?forca 0)
-        then (bind ?fo "baix")
-        else
-            (if (or (< ?forca 2) (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies))
-                then (bind ?fo "moderat")
-                else (bind ?fo "alt"))
-    )
-
-    (if (< ?resistencia 0)
-        then (bind ?re "baix")
-        else
-            (if (or (< ?resistencia 2) (member [Cardiovascular] $?patologies) (member [Diabetis] $?patologies) (member [Hipertensio] $?patologies) (member [Malaltia_pulmonar] $?patologies) (member [Sobrepes] $?patologies))
-                then (bind ?re "moderat")
-                else (bind ?re "alt"))
-    )
-    (bind ?total_num (+ ?equilibri ?forca ?flexibilitat ?resistencia))
-
-    (if (< ?total_num -2)
-        then (bind ?total "baix")
-        else
-            (if (< ?total_num 4)
-                then (bind ?total "moderat")
-                else (bind ?total "alt"))
-    )
-    (assert (nivell-fisic (equilibri ?eq) (flexibilitat ?fl) (forca ?fo) (resistencia ?re) (total ?total)))
-)
-
-(defrule analisi::prioritat_tipus "Exercicis amb prioritat per culpa de la patologia"
-     ?r <- (punts-fisic)
-    (pregunta-usuari (patologies $?patologies))
-    (not (prioritat_tipus_feta))
     =>
     
-    (bind $?llista (create$))
-    (if (or (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies))
-         then (bind $?llista (insert$ $?llista 1 "forca"))
-             (bind $?llista (insert$ $?llista 1 "flexibilitat"))
-     )
-
-    (if (or (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Sobrepes] $?patologies))
-        then (bind $?llista (insert$ $?llista 1 "equilibri"))
-    )
-
-    (if (or (member [Cardiovascular] $?patologies) (member [Diabetis] $?patologies) (member [Hipertensio] $?patologies) (member [Malaltia_pulmonar] $?patologies) (member [Sobrepes] $?patologies))
-        then (bind $?llista (insert$ $?llista 1 "resistencia"))
-    )
-    (modify ?r (recomanacions $?llista))
-    (assert (prioritat_tipus_feta))
+    (assert (abstraccio-nivell-equilibri-feta))
+    (assert (nivell-fisic (equilibri "baix")))
 )
+
+(defrule analisi::abstraccio-nivell-equilibri-moderat "mirem si es nivell d equilibri moderat"
+    (punts-fisic (equilibri ?equilibri))
+    ?v <- (pregunta-usuari (patologies $?patologies))
+    (not (abstraccio-nivell-equilibri-feta))
+    (test (or 
+        (and (< ?equilibri 2) (>= ?equilibri 0))
+        (member [Artritis] $?patologies)
+        (member [Fragilitat] $?patologies)
+        (member [Sobrepes] $?patologies)
+    ))
+
+    =>
+
+    (assert (abstraccio-nivell-equilibri-feta))
+    (assert (nivell-fisic (equilibri "moderat")))
+)
+
+(defrule analisi::abstraccio-nivell-equilibri-alt "mirem si es nivell d equilibri alt"
+    (punts-fisic (equilibri ?equilibri))
+    ?v <- (pregunta-usuari (patologies $?patologies))
+    (not (abstraccio-nivell-equilibri-feta))
+    (test (and 
+        (> ?equilibri 2)
+        (not(member [Artritis] $?patologies))
+        (not(member [Fragilitat] $?patologies))
+        (not(member [Sobrepes] $?patologies))
+    ))
+
+    =>
+
+    (assert (abstraccio-nivell-equilibri-feta))
+    (assert (nivell-fisic (equilibri "alt")))
+)
+
+;;;;;;;;;;;;;;; FLEXIBILITAT ABSTRACCIO PROBLEMA
+(defrule analisi::abstraccio-nivell-flexibilitat-baix "mirem si es nivell de flexibilitat baix"
+    (punts-fisic (flexibilitat ?flexibilitat))
+    ?n <- (nivell-fisic)
+    (abstraccio-nivell-equilibri-feta)
+    (not(abstraccio-nivell-flexibilitat-feta))
+    (test (< ?flexibilitat 0))
+
+    =>
+    
+    (modify ?n (flexibilitat "baix"))
+    (assert(abstraccio-nivell-flexibilitat-feta))
+)
+
+(defrule analisi::abstraccio-nivell-flexibilitat-moderat "mirem si es nivell de flexibilitat moderat"
+    (punts-fisic (flexibilitat ?flexibilitat))
+    ?n <- (nivell-fisic)
+    ?v <- (pregunta-usuari (patologies $?patologies))
+    (abstraccio-nivell-equilibri-feta)
+    (not(abstraccio-nivell-flexibilitat-feta))
+    (test (or 
+        (and (< ?flexibilitat 2) (>= ?flexibilitat 0))
+        (member [Artritis] $?patologies)
+        (member [Fragilitat] $?patologies)
+        (member [Osteoporosi] $?patologies)
+    ))
+
+    =>
+
+    (modify ?n (flexibilitat "moderat"))
+    (assert(abstraccio-nivell-flexibilitat-feta))
+)
+
+(defrule analisi::abstraccio-nivell-flexibilitat-alt "mirem si es nivell de flexibilitat alt"
+    (punts-fisic (flexibilitat ?flexibilitat))
+    ?n <- (nivell-fisic)
+    ?v <- (pregunta-usuari (patologies $?patologies))
+    (abstraccio-nivell-equilibri-feta)
+    (not(abstraccio-nivell-flexibilitat-feta))
+    (test (and 
+        (> ?flexibilitat 2)
+        (not(member [Artritis] $?patologies))
+        (not(member [Fragilitat] $?patologies))
+        (not(member [Osteoporosi] $?patologies))
+    ))
+
+    =>
+
+    (modify ?n (flexibilitat "alt"))
+    (assert(abstraccio-nivell-flexibilitat-feta))
+)
+
+;;;;;;;;;;;;;;; FORCA ABSTRACCIO PROBLEMA
+(defrule analisi::abstraccio-nivell-forca-baix "mirem si es nivell de forca baix"
+    (punts-fisic (forca ?forca))
+    ?n <- (nivell-fisic)
+    (abstraccio-nivell-equilibri-feta)
+    (not(abstraccio-nivell-forca-feta))
+    (test (< ?forca 0))
+
+    =>
+    
+    (modify ?n (forca "baix"))
+    (assert(abstraccio-nivell-forca-feta))
+)
+
+(defrule analisi::abstraccio-nivell-forca-moderat "mirem si es nivell de forca moderat"
+    (punts-fisic (forca ?forca))
+    ?n <- (nivell-fisic)
+    ?v <- (pregunta-usuari (patologies $?patologies))
+    (abstraccio-nivell-equilibri-feta)
+    (not(abstraccio-nivell-forca-feta))
+    (test (or 
+        (and (< ?forca 2) (>= ?forca 0))
+        (member [Artritis] $?patologies)
+        (member [Fragilitat] $?patologies)
+        (member [Osteoporosi] $?patologies)
+    ))
+
+    =>
+
+    (modify ?n (forca "moderat"))
+    (assert(abstraccio-nivell-forca-feta))
+)
+
+(defrule analisi::abstraccio-nivell-forca-alt "mirem si es nivell de forca alt"
+    (punts-fisic (forca ?forca))
+    ?n <- (nivell-fisic)
+    ?v <- (pregunta-usuari (patologies $?patologies))
+    (abstraccio-nivell-equilibri-feta)
+    (not(abstraccio-nivell-forca-feta))
+    (test (and 
+        (> ?forca 2)
+        (not(member [Artritis] $?patologies))
+        (not(member [Fragilitat] $?patologies))
+        (not(member [Osteoporosi] $?patologies))
+    ))
+
+    =>
+
+    (modify ?n (forca "alt"))
+    (assert(abstraccio-nivell-forca-feta))
+)
+
+
+;;;;;;;;;;;;;;; RESISTENCIA ABSTRACCIO PROBLEMA
+(defrule analisi::abstraccio-nivell-resistencia-baix "mirem si es nivell de resistencia baix"
+    (punts-fisic (resistencia ?resistencia))
+    ?n <- (nivell-fisic)
+    (abstraccio-nivell-equilibri-feta)
+    (not(abstraccio-nivell-resistencia-feta))
+    (test (< ?resistencia 0))
+
+    =>
+    
+    (modify ?n (resistencia "baix"))
+    (assert(abstraccio-nivell-resistencia-feta))
+)
+
+(defrule analisi::abstraccio-nivell-resistencia-moderat "mirem si es nivell de resistencia moderat"
+    (punts-fisic (resistencia ?resistencia))
+    ?n <- (nivell-fisic)
+    ?v <- (pregunta-usuari (patologies $?patologies))
+    (abstraccio-nivell-equilibri-feta)
+    (not(abstraccio-nivell-resistencia-feta))
+    (test (or 
+        (and (< ?resistencia 2) (>= ?resistencia 0))
+        (member [Cardiovascular] $?patologies)
+        (member [Diabetis] $?patologies)
+        (member [Hipertensio] $?patologies)
+        (member [Malaltia_pulmonar] $?patologies)
+        (member [Sobrepes] $?patologies)
+    ))
+
+    =>
+
+    (modify ?n (resistencia "moderat"))
+    (assert(abstraccio-nivell-resistencia-feta))
+)
+
+(defrule analisi::abstraccio-nivell-resistencia-alt "mirem si es nivell de resistencia alt"
+    (punts-fisic (resistencia ?resistencia))
+    ?n <- (nivell-fisic)
+    ?v <- (pregunta-usuari (patologies $?patologies))
+    (abstraccio-nivell-equilibri-feta)
+    (not(abstraccio-nivell-resistencia-feta))
+    (test (and 
+        (> ?resistencia 2)
+        (not(member [Cardiovascular] $?patologies))
+        (not(member [Diabetis] $?patologies))
+        (not(member [Hipertensio] $?patologies))
+        (not(member [Malaltia_pulmonar] $?patologies))
+        (not(member [Sobrepes] $?patologies))
+    ))
+
+    =>
+
+    (modify ?n (resistencia "alt"))
+    (assert(abstraccio-nivell-resistencia-feta))
+)
+
+;;;;;;;;;;;;;;; FORMA TOTAL ABSTRACCIO PROBLEMA
+(defrule analisi::abstraccio-nivell-total-baix "mirem si es nivell total es baix"
+    (punts-fisic (total ?total))
+    ?n <- (nivell-fisic)
+    (not(abstraccio-nivell-total-feta))
+    (test (< ?total -2))
+
+    =>
+
+    (modify ?n (total "baix"))
+    (assert(abstraccio-nivell-total-feta))
+)
+
+(defrule analisi::abstraccio-nivell-total-moderat "mirem si es nivell total es moderat"
+    (punts-fisic (total ?total))
+    ?n <- (nivell-fisic)
+    (not(abstraccio-nivell-total-feta))
+    (test (and (>= ?total -2) (< ?total 4)))
+
+    =>
+
+    (modify ?n (total "moderat"))
+    (assert(abstraccio-nivell-total-feta))
+)
+
+(defrule analisi::abstraccio-nivell-total-alt "mirem si es nivell total es alt"
+    (punts-fisic (total ?total))
+    ?n <- (nivell-fisic)
+    (not(abstraccio-nivell-total-feta))
+    (test (>= ?total 4))
+
+    =>
+
+    (modify ?n (total "alt"))
+    (assert(abstraccio-nivell-total-feta))
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; equilibri flexibilitat forca resistencia
+(defrule analisi::prioritat_equilibri "Exercicis equilibri prioritat"
+    (pregunta-usuari (patologies $?patologies))
+    ?u <- (nivell-fisic (recomanacions $?recomanacions))
+    (not(prioritat_equilibri_feta))
+    (test (or (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Sobrepes] $?patologies)))
+    
+    =>
+    
+    (bind $?recomanacions (insert$ $?recomanacions 1 "equilibri"))
+    (modify ?u (recomanacions $?recomanacions))
+    (assert(prioritat_equilibri_feta))
+)
+
+(defrule analisi::prioritat_flexibilitat "Exercicis flexibilitat prioritat"
+    (pregunta-usuari (patologies $?patologies))
+    ?u <- (nivell-fisic (recomanacions $?recomanacions))
+    (not(prioritat_flexibilitat_feta))
+    (test (or (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies)))
+    
+    =>
+    
+    (bind $?recomanacions (insert$ $?recomanacions 1 "flexibilitat"))
+    (modify ?u (recomanacions $?recomanacions))
+    (assert(prioritat_flexibilitat_feta))
+)
+
+(defrule analisi::prioritat_forca "Exercicis forca prioritat"
+    (pregunta-usuari (patologies $?patologies))
+    ?u <- (nivell-fisic (recomanacions $?recomanacions))
+    (not(prioritat_forca_feta))
+    (test (or (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies)))
+    
+    =>
+    
+    (bind $?recomanacions (insert$ $?recomanacions 1 "forca"))
+    (modify ?u (recomanacions $?recomanacions))
+    (assert(prioritat_forca_feta))
+)
+
+(defrule analisi::prioritat_resistencia "Exercicis resistencia prioritat"
+    (pregunta-usuari (patologies $?patologies))
+    ?u <- (nivell-fisic (recomanacions $?recomanacions))
+    (not(prioritat_resistencia_feta))
+    (test (or (member [Cardiovascular] $?patologies) (member [Diabetis] $?patologies) (member [Hipertensio] $?patologies) (member [Malaltia_pulmonar] $?patologies) (member [Sobrepes] $?patologies)))
+    
+    =>
+    
+    (bind $?recomanacions (insert$ $?recomanacions 1 "resistencia"))
+    (modify ?u (recomanacions $?recomanacions))
+    (assert(prioritat_resistencia_feta))
+)
+
 
 (defrule analisi::temps_solucio "Calculem quantitat de dies i minuts per dia "
     ?n <- (nivell-fisic (total ?total))
