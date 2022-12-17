@@ -364,6 +364,7 @@
 	(slot forca (type STRING))
 	(slot resistencia (type STRING))
     (slot total (type STRING))
+    (slot edat (type STRING))
     (multislot recomanacions (type STRING))
 )
 
@@ -937,8 +938,102 @@
     (assert(prioritat_resistencia_feta))
 )
 
+;;;;;;;;;;;;;;;;;ABSTRACCIO EDAT
+(defrule analisi::abstraccio_anys_pocs "Abstraccio de pocs anys de la persona"
+    (pregunta-usuari (edat ?edat))
+    (not(abstraccio_anys_feta))
+    ?n <- (nivell-fisic)
+    (test (< ?edat 75))
+    
+    =>
 
-(defrule analisi::temps_solucio "Calculem quantitat de dies i minuts per dia "
+    (modify ?n (edat "pocs"))
+    (assert(abstraccio_anys_feta))
+)
+
+(defrule analisi::abstraccio_anys_bastants "Abstraccio de bastants anys de la persona"
+    (pregunta-usuari (edat ?edat))
+    (not(abstraccio_anys_feta))
+    ?n <- (nivell-fisic)
+    (test (and (>= ?edat 75)(< ?edat 85)))
+    
+    =>
+
+    (modify ?n (edat "bastants"))
+    (assert(abstraccio_anys_feta))
+)
+
+(defrule analisi::abstraccio_anys_molts "Abstraccio de molts anys de la persona"
+    (pregunta-usuari (edat ?edat))
+    (not(abstraccio_anys_feta))
+    ?n <- (nivell-fisic)
+    (test (>= ?edat 85))
+    
+    =>
+
+    (modify ?n (edat "molts"))
+    (assert(abstraccio_anys_feta))
+)
+
+; (defrule analisi::iniciar_duracio "Posar al minim els dies i els minuts"
+;     (abstraccio_anys_feta)
+;     (abstraccio-nivell-total-feta)
+;     (not(iniciar_duracio_feta))
+
+;     =>
+
+;     (assert (temporal (num_dies 3) (minuts_dia 30)))
+;     (assert(iniciar_duracio_feta))
+; )
+
+; ;;; Calcul dies i minuts
+; (defrule analisi::duracio_nivell_fisic_baix "Duracio nivell fisic baix"
+;     (nivell-fisic (total ?total))
+;     ?t <- (temporal (num_dies ?d) (minuts_dia ?m))
+;     (iniciar_duracio_feta)
+;     (not(duracio_nivell_fisic_baix))
+;     (test (eq ?total "baix"))
+
+;     =>
+
+; 	(modify ?t (num_dies (+ 2 ?d)))
+;     (assert(duracio_nivell_fisic_baix))
+; )
+
+; (defrule analisi::duracio_nivell_fisic_moderat "Duracio nivell fisic moderat"
+;     (nivell-fisic (total ?total))
+;     ?t <- (temporal (num_dies ?d) (minuts_dia ?m))
+;     (iniciar_duracio_feta)
+;     (not(duracio_nivell_fisic_baix))
+;     (test (eq ?total "moderat"))
+
+;     =>
+
+; 	(modify ?t (num_dies (+ 1 ?d)))
+;     (assert(duracio_nivell_fisic_baix))
+; )
+
+; (defrule analisi::duracio_nivell_fisic_alt "Duracio nivell fisic alt"
+;     (nivell-fisic (total ?total))
+;     ?t <- (temporal (num_dies ?d) (minuts_dia ?m))
+;     (iniciar_duracio_feta)
+;     (not(duracio_nivell_fisic_baix))
+;     (test (eq ?total "alt"))
+
+;     =>
+
+; 	(modify ?t (num_dies (+ 0 ?d)))
+;     (assert(duracio_nivell_fisic_baix))
+; )
+
+
+;    n_total           baix moderada alta
+; edat           (+0)(+2)  (+15)(+1)  (+30)(+0)
+; pocs(+30)(+0)        5(60) 4(75)   3(90)     300 300 270     180 300 450
+; bastants(+15)(+1)    6(45) 5(60)   4(75)     270 300 300     180 300 450
+; molts(+0)(+2)        7(30) 6(45)   5(60)     210 270 300     150 270 420
+
+(defrule analisi::temps_solucio "Calculem quantitat de dies i minuts per dia"
     ?n <- (nivell-fisic (total ?total))
     ?e <- (pregunta-usuari (edat ?edat))
     (not (temporal))
