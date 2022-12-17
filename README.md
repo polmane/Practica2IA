@@ -28,7 +28,7 @@ precisas.
 
 #### Identificació
 - [x] La descripción del problema es algo más elaborada que la que ya hay en el enunciado
-- [ ] Análisis detallado de la viabilidad de construir el SBC
+- [x] Análisis detallado de la viabilidad de construir el SBC
 - [ ] Identificación de las fuentes de conocimiento
 - [x] Descripción clara de los objetivos del problema y los resultados del sistema
 
