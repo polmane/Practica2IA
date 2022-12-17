@@ -27,10 +27,10 @@ precisas.
 - [ ] No hay ninguno que sobre, ni tampoco se echa ninguno en falta.
 
 #### Identificació
-- [ ] La descripción del problema es algo más elaborada que la que ya hay en el enunciado
+- [x] La descripción del problema es algo más elaborada que la que ya hay en el enunciado
 - [ ] Análisis detallado de la viabilidad de construir el SBC
 - [ ] Identificación de las fuentes de conocimiento
-- [ ] Descripción clara de los objetivos del problema y los resultados del sistema
+- [x] Descripción clara de los objetivos del problema y los resultados del sistema
 
 #### Conceptualització
 - [ ] Descripción del los conceptos del dominio
