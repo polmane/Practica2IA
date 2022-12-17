@@ -17,7 +17,7 @@
 - [ ] Buena presentación, estructura adecuada y siguiendo la metodología de desarrollo, explicaciones bien elaboradas, concisas y
 precisas.
 - [ ] El documento no tiene faltas de ortografía, ni errores gramaticales.
-- [ ] El documento está organizado de forma lógica.
+- [x] El documento está organizado de forma lógica.
 - [ ] Las diferentes secciones y subsecciones están bien ligadas, y facilitan el seguimiento del contenido.
 - [ ] El documento en una primera parte plantea el problema, en una segunda desarrolla y elabora la solución y en una tercera resume los resultados y plantea las conclusiones.
 - [ ] Los contenidos son muy claros. Las frases son cortas y fáciles de entender a la primera.
@@ -37,6 +37,7 @@ precisas.
 - [ ] Descripción detallada de los problemas y subproblemas que intervienen en la resolución
 - [ ] Ejemplos del conocimiento experto extraído del dominio
 - [ ] Descripción informal del proceso de resolución y como se organizan los problemas y subproblemas
+
 #### Formalització
 - [ ] Se explica detalladamente como se ha construido la ontología
 - [ ] La ontología incluye todos los conceptos, todos los atributos necesarios, todas las relaciones necesarias
@@ -63,3 +64,4 @@ precisas.
 
 
 
+#### - [ ] Conclusions
