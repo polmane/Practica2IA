@@ -8,7 +8,7 @@
 
 ### Codi
 
-- [ ] Modificar els ifs  
+- [x] Modificar els ifs  
 - [ ] Acabar-lo
 
 ### Documentació 
