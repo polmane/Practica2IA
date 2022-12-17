@@ -1,6 +1,6 @@
 # Practica2IA
 
-* Link a la documentacio:?
+* Link a la documentacio: https://www.overleaf.com/project/639dbeec930f3c7507be5b52
 * DOCS conté els documents amb els quals ens vam fer experts<br />
 * ontologia.owl és la ontologia feta amb Protegé<br />
 * PracticaSBC és l'enunciat<br />
