@@ -2,7 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology ontologia.owl
-;;; :Date 09/12/2022 00:07:39
+;;; :Date 18/12/2022 05:03:40
 
 (defclass Exercici
     (is-a USER)
@@ -29,12 +29,6 @@
 )
 
 (defclass Fortalesa
-    (is-a Exercici)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass FortalesaEquilibri
     (is-a Exercici)
     (role concrete)
     (pattern-match reactive)
@@ -110,7 +104,7 @@
 )
 
 (definstances instances
-    ([Aixecament_lateral_cama] of FortalesaEquilibri
+    ([Aixecament_lateral_cama] of Equilibri
          (nom  "Aixecament lateral de cames")
     )
 
@@ -182,7 +176,7 @@
          (nom  "Extensio de genoll")
     )
 
-    ([Extensio_maluc] of FortalesaEquilibri
+    ([Extensio_maluc] of Equilibri
          (nom  "Extensio de maluc")
     )
 
@@ -190,7 +184,7 @@
          (nom  "Extensio de triceps")
     )
 
-    ([Felxio_plantar] of FortalesaEquilibri
+    ([Felxio_plantar] of Equilibri
          (nom  "Flexio plantar")
     )
 
@@ -198,11 +192,11 @@
          (nom  "Flexio d'espatlla")
     )
 
-    ([Flexio_genoll] of FortalesaEquilibri
+    ([Flexio_genoll] of Equilibri
          (nom  "Flexio de genoll")
     )
 
-    ([Flexio_maluc] of FortalesaEquilibri
+    ([Flexio_maluc] of Equilibri
          (nom  "Flexio de maluc")
     )
 
@@ -238,6 +232,18 @@
          (nom  "Remar")
     )
 
+    ([ResistenciaAlt] of Realitzacio
+         (duracio  40)
+    )
+
+    ([ResistenciaBaix] of Realitzacio
+         (duracio  20)
+    )
+
+    ([ResistenciaModerat] of Realitzacio
+         (duracio  30)
+    )
+
     ([Rotacio_doble_maluc] of Flexibilitat
          (nom  "Rotacio doble de maluc")
     )
@@ -250,32 +256,20 @@
          (nom  "Rotacio simple de maluc")
     )
 
-    ([Sobrepes] of Patologia
-         (nom  "Sobrepes")
-    )
-
-    ([10min] of Realitzacio
+    ([SeriesAlt] of Realitzacio
          (duracio  10)
     )
 
-    ([15min] of Realitzacio
-         (duracio  15)
-    )
-
-    ([25min] of Realitzacio
-         (duracio  25)
-    )
-
-    ([40min] of Realitzacio
-         (duracio  40)
-    )
-
-    ([6min] of Realitzacio
+    ([SeriesBaix] of Realitzacio
          (duracio  6)
     )
 
-    ([8min] of Realitzacio
+    ([SeriesModerat] of Realitzacio
          (duracio  8)
+    )
+
+    ([Sobrepes] of Patologia
+         (nom  "Sobrepes")
     )
 
 )
@@ -458,23 +452,23 @@
      (return ?ins)
 )
 
-(deffunction analisi::realitzacio (?tipus ?nivell)
+(deffunction analisi::assignar-realitzacio (?tipus ?nivell)
     (bind $?obj-exs (find-all-instances ((?inst ?tipus)) TRUE))
     (loop-for-count (?i 1 (length$ $?obj-exs)) do
 		(bind ?curr-obj (nth$ ?i ?obj-exs))
         (if (eq ?nivell "baix")
             then (if (eq ?tipus Resistencia)
-                    then (send ?curr-obj put-es_realitza [15min])
-                    else (send ?curr-obj put-es_realitza [6min])) 
+                    then (send ?curr-obj put-es_realitza [ResistenciaBaix])
+                    else (send ?curr-obj put-es_realitza [SeriesBaix])) 
             else (if (eq ?nivell "moderat")
                     then (
                         if (eq ?tipus Resistencia)
-                            then (send ?curr-obj put-es_realitza [25min])
-                            else (send ?curr-obj put-es_realitza [8min]))
+                            then (send ?curr-obj put-es_realitza [ResistenciaModerat])
+                            else (send ?curr-obj put-es_realitza [SeriesModerat]))
                     else 
                         (if (eq ?tipus Resistencia)
-                            then (send ?curr-obj put-es_realitza [40min])
-                            else (send ?curr-obj put-es_realitza [10min]))
+                            then (send ?curr-obj put-es_realitza [ResistenciaAlt])
+                            else (send ?curr-obj put-es_realitza [SeriesAlt]))
 
                 )              
         )
@@ -674,7 +668,7 @@
     ?v <- (pregunta-usuari (patologies $?patologies))
     (not (abstraccio-nivell-equilibri-feta))
     (test (and 
-        (> ?equilibri 2)
+        (>= ?equilibri 2)
         (not(member [Artritis] $?patologies))
         (not(member [Fragilitat] $?patologies))
         (not(member [Sobrepes] $?patologies))
@@ -726,7 +720,7 @@
     (abstraccio-nivell-equilibri-feta)
     (not(abstraccio-nivell-flexibilitat-feta))
     (test (and 
-        (> ?flexibilitat 2)
+        (>= ?flexibilitat 2)
         (not(member [Artritis] $?patologies))
         (not(member [Fragilitat] $?patologies))
         (not(member [Osteoporosi] $?patologies))
@@ -778,7 +772,7 @@
     (abstraccio-nivell-equilibri-feta)
     (not(abstraccio-nivell-forca-feta))
     (test (and 
-        (> ?forca 2)
+        (>= ?forca 2)
         (not(member [Artritis] $?patologies))
         (not(member [Fragilitat] $?patologies))
         (not(member [Osteoporosi] $?patologies))
@@ -833,7 +827,7 @@
     (abstraccio-nivell-equilibri-feta)
     (not(abstraccio-nivell-resistencia-feta))
     (test (and 
-        (> ?resistencia 2)
+        (>= ?resistencia 2)
         (not(member [Cardiovascular] $?patologies))
         (not(member [Diabetis] $?patologies))
         (not(member [Hipertensio] $?patologies))
@@ -1098,33 +1092,158 @@
 ;     (assert (temporal (num_dies ?d) (minuts_dia ?m)))
 ; )
 
+
 (defrule analisi::asociacio_heuristica "asociacio heuristica"
     (nivell-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
     =>
-    (realitzacio Resistencia ?resistencia)
-    (realitzacio Equilibri ?equilibri)
-    (realitzacio Flexibilitat ?flexibilitat)
-    (realitzacio Fortalesa ?forca)
- 
+    (assignar-realitzacio Resistencia ?resistencia)
+    (assignar-realitzacio Equilibri ?equilibri)
+    (assignar-realitzacio Flexibilitat ?flexibilitat)
+    (assignar-realitzacio Fortalesa ?forca)
+    ; (assert (realitzacio (resistencia ?resistencia) (equilibri ?equilibri) (flexibilitat ?flexibilitat) (fortalesa ?forca)))
+    (focus sintesi)
 )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;Realitzacio
+
+; (deftemplate MAIN::realitzacio
+;     (slot flexibilitat (type STRING))
+; 	(slot equilibri (type STRING))
+; 	(slot fortalesa (type STRING))
+; 	(slot resistencia (type STRING))
+; )
+
+; (defrule analisi::realitzacio_resistencia_baix "Associem realitzacio a resistencia baixa"
+;     (realitzacio (resistencia ?resistencia&:(eq ?resistencia "baix")))
+
+;     =>
+
+;     (bind $?obj-resistencia (find-all-instances ((?inst Resistencia)) TRUE))
+; 	(loop-for-count (?i 1 (length$ $?obj-resistencia)) do
+; 		(bind ?curr-obj (nth$ ?i ?obj-resistencia))
+;           (send ?curr-obj put-es_realitza [ResistenciaBaix])
+;         ;   (bind ?real (send ?curr-obj get-es_realitza))
+;         ;   (printout t (send ?real get-duracio))
+; 	)
+    
+; )
+
+; (defrule analisi::realitzacio_resistencia_moderat "Associem realitzacio a resistencia moderada"
+;     (realitzacio (resistencia ?resistencia&:(eq ?resistencia "moderat")))
+
+;     =>
+
+;     (bind $?obj-resistencia (find-all-instances ((?inst Resistencia)) TRUE))
+; 	(loop-for-count (?i 1 (length$ $?obj-resistencia)) do
+; 		(bind ?curr-obj (nth$ ?i ?obj-resistencia))
+;           (send ?curr-obj put-es_realitza [ResistenciaModerat])
+; 	)
+; )
+
+; (defrule analisi::realitzacio_resistencia_alt "Associem realitzacio a resistencia alta"
+;     (realitzacio (resistencia ?resistencia&:(eq ?resistencia "alt")))
+
+;     =>
+
+;     (bind $?obj-resistencia (find-all-instances ((?inst Resistencia)) TRUE))
+; 	(loop-for-count (?i 1 (length$ $?obj-resistencia)) do
+; 		(bind ?curr-obj (nth$ ?i ?obj-resistencia))
+;           (send ?curr-obj put-es_realitza [ResistenciaAlt])
+; 	)
+; )
+; ;;;;;;;;;;;;;;;;;;;;;;;;flexibilitat
+; (defrule analisi::realitzacio_flexibilitat_baix "Associem realitzacio a flexibilitat baixa"
+;     (realitzacio (flexibilitat ?flexibilitat&:(eq ?flexibilitat "baix")))
+
+;     =>
+
+;     (bind $?obj-flexibilitat (find-all-instances ((?inst Flexibilitat)) TRUE))
+; 	(loop-for-count (?i 1 (length$ $?obj-flexibilitat)) do
+; 		(bind ?curr-obj (nth$ ?i ?obj-flexibilitat))
+;           (send ?curr-obj put-es_realitza [SeriesBaix])
+; 	)
+    
+; )
+
+; (defrule analisi::realitzacio_flexibilitat_moderat "Associem realitzacio a flexibilitat moderada"
+;     (realitzacio (flexibilitat ?flexibilitat&:(eq ?flexibilitat "moderat")))
+
+;     =>
+
+;     (bind $?obj-flexibilitat (find-all-instances ((?inst Flexibilitat)) TRUE))
+; 	(loop-for-count (?i 1 (length$ $?obj-flexibilitat)) do
+; 		(bind ?curr-obj (nth$ ?i ?obj-flexibilitat))
+;           (send ?curr-obj put-es_realitza [SeriesModerat])
+; 	)
+; )
+
+; (defrule analisi::realitzacio_flexibilitat_alt "Associem realitzacio a flexibilitat alta"
+;     (realitzacio (flexibilitat ?flexibilitat&:(eq ?flexibilitat "alt")))
+
+;     =>
+
+;     (bind $?obj-flexibilitat (find-all-instances ((?inst Flexibilitat)) TRUE))
+; 	(loop-for-count (?i 1 (length$ $?obj-flexibilitat)) do
+; 		(bind ?curr-obj (nth$ ?i ?obj-flexibilitat))
+;           (send ?curr-obj put-es_realitza [SeriesAlt])
+; 	)
+; )
+
+; ;;;;;;;;;;;;;;;;;;;;;;;; equilibri
+; (defrule analisi::realitzacio_equilibri_baix "Associem realitzacio a equilibri baix"
+;     (realitzacio (equilibri ?equilibri&:(eq ?equilibri "baix")))
+
+;     =>
+
+;     (bind $?obj-equilibri (find-all-instances ((?inst Equilibri)) TRUE))
+; 	(loop-for-count (?i 1 (length$ $?obj-equilibri)) do
+; 		(bind ?curr-obj (nth$ ?i ?obj-equilibri))
+;           (send ?curr-obj put-es_realitza [SeriesBaix])
+; 	)
+    
+; )
+
+; (defrule analisi::realitzacio_equilibri_moderat "Associem realitzacio a equilibri moderat"
+;     (realitzacio (equilibri ?equilibri&:(eq ?equilibri "moderat")))
+
+;     =>
+
+;     (bind $?obj-equilibri (find-all-instances ((?inst Equilibri)) TRUE))
+; 	(loop-for-count (?i 1 (length$ $?obj-equilibri)) do
+; 		(bind ?curr-obj (nth$ ?i ?obj-equilibri))
+;           (send ?curr-obj put-es_realitza [SeriesModerat])
+; 	)
+; )
+
+; (defrule analisi::realitzacio_equilibri_alt "Associem realitzacio a equilibri alt"
+;     (realitzacio (equilibri ?equilibri&:(eq ?equilibri "alt")))
+
+;     =>
+
+;     (bind $?obj-equilibri (find-all-instances ((?inst Equilibri)) TRUE))
+; 	(loop-for-count (?i 1 (length$ $?obj-equilibri)) do
+; 		(bind ?curr-obj (nth$ ?i ?obj-equilibri))
+;           (send ?curr-obj put-es_realitza [SeriesAlt])
+; 	)
+; )
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defrule sintesi::relacio-exercicis "solucio abstracta"
-    ?u <- (nivell-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
-      ; cada ex dura 15 min
-    =>
-    (bind $?obj-exercicis (find-all-instances ((?inst Exercici)) TRUE))
-    (bind $?nom-exercicis (create$ ))
-	(loop-for-count (?i 1 (length$ $?obj-exercicis)) do
-		(bind ?curr-obj (nth$ ?i ?obj-exercicis))
-          (send ?curr-obj put-es_realitza 15)
-	)
-    ;; (focus sintesi)
-)
+; (defrule sintesi::relacio-exercicis "solucio abstracta"
+;     ?u <- (nivell-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
+;       ; cada ex dura 15 min
+;     =>
+;     (bind $?obj-exercicis (find-all-instances ((?inst Exercici)) TRUE))
+;     (bind $?nom-exercicis (create$ ))
+; 	(loop-for-count (?i 1 (length$ $?obj-exercicis)) do
+; 		(bind ?curr-obj (nth$ ?i ?obj-exercicis))
+;           (send ?curr-obj put-es_realitza 15)
+; 	)
+;     ;; (focus sintesi)
+; )
 
 (defrule sintesi::solRand "solucio aleatoria"
      (declare (salience 100))
@@ -1148,44 +1267,45 @@
 
 )
 
-	(deftemplate imprimir::min
-		(slot count (type INTEGER))
-		)
+(deftemplate imprimir::min
+    (slot count (type INTEGER))
+)
 
-	(deffacts imprimir::hechos-iniciales
-		(min (count 1))
-	)
+(deffacts imprimir::hechos-iniciales
+    (min (count 1))
+)
 
-	(defrule imprimir::inicial "regla inicial"
-		(declare (salience 10))
-		=>
-		(printout t crlf)
-		(printout t "-----------------------------------------------------------------" crlf)
-		(printout t "-------------------- Exercicis Personalitzats -------------------" crlf)
-		(printout t "-----------------------------------------------------------------" crlf)
-		(printout t "-----------------------------------------------------------------" crlf)
-		(printout t crlf)
-	)
+(defrule imprimir::inicial "regla inicial"
+    (declare (salience 10))
+    =>
+    (printout t crlf)
+    (printout t "-----------------------------------------------------------------" crlf)
+    (printout t "-------------------- Exercicis Personalitzats -------------------" crlf)
+    (printout t "-----------------------------------------------------------------" crlf)
+    (printout t "-----------------------------------------------------------------" crlf)
+    (printout t crlf)
+)
 
 
-	(defrule imprimir::imprimir-dia
-		?min <- (min (count ?n))
-		?Dia <- (object (is-a Solucio) (dia_solucio ?numDia))
-		(test (eq ?n ?numDia))
-		=>
-		(format t "Els exercicis a fer el dia %d son:" ?n)
-		(printout t crlf)
-		(printout t "-------------------------------------------------------------" crlf)
-		(printout t crlf)
-		(bind $?exercicis(send ?Dia get-composta_per))
-		(loop-for-count (?i 1 (length$ $?exercicis)) do
-				(bind ?curr-ex (nth$ ?i $?exercicis))
-				(bind ?nom-exercicis (send ?curr-ex get-nom))
+(defrule imprimir::imprimir-dia
+    ?min <- (min (count ?n))
+    ?Dia <- (object (is-a Solucio) (dia_solucio ?numDia))
+    (test (eq ?n ?numDia))
+    =>
+    (format t "Els exercicis a fer el dia %d son:" ?n)
+    (printout t crlf)
+    (printout t "-------------------------------------------------------------" crlf)
+    ;(printout t crlf)
+    (bind $?exercicis(send ?Dia get-composta_per))
+    (loop-for-count (?i 1 (length$ $?exercicis)) do
+            (bind ?curr-ex (nth$ ?i $?exercicis))
+            (bind ?nom-exercici (send ?curr-ex get-nom))
+            (bind ?realitzacio_ex (send ?curr-ex get-es_realitza))
 ;;;				(printout t crlf)
-				(format t "%s - 15 min" ?nom-exercicis)
-				(printout t crlf)
-		)
-		(printout t crlf)
-		(assert (min (count (+ ?n 1))))
-		(retract ?min)
-	)
+            (format t "%s - %d min" ?nom-exercici (send ?realitzacio_ex get-duracio))
+            (printout t crlf)
+    )
+    (printout t crlf)
+    (assert (min (count (+ ?n 1))))
+    (retract ?min)
+)

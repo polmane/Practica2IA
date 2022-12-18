@@ -134,11 +134,6 @@
            rdfs:subClassOf :Exercici .
 
 
-###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#FortalesaEquilibri
-:FortalesaEquilibri rdf:type owl:Class ;
-                    rdfs:subClassOf :Exercici .
-
-
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Patologia
 :Patologia rdf:type owl:Class .
 
@@ -166,8 +161,7 @@
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Aixecament_lateral_cama
 :Aixecament_lateral_cama rdf:type owl:NamedIndividual ,
-                                  :Equilibri ,
-                                  :FortalesaEquilibri ;
+                                  :Equilibri ;
                          :nom "Aixecament lateral de cames" .
 
 
@@ -275,8 +269,7 @@
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Extensio_maluc
 :Extensio_maluc rdf:type owl:NamedIndividual ,
-                         :Equilibri ,
-                         :FortalesaEquilibri ;
+                         :Equilibri ;
                 :nom "Extensio de maluc" .
 
 
@@ -288,8 +281,7 @@
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Felxio_plantar
 :Felxio_plantar rdf:type owl:NamedIndividual ,
-                         :Equilibri ,
-                         :FortalesaEquilibri ;
+                         :Equilibri ;
                 :nom "Flexio plantar" .
 
 
@@ -301,15 +293,13 @@
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Flexio_genoll
 :Flexio_genoll rdf:type owl:NamedIndividual ,
-                        :Equilibri ,
-                        :FortalesaEquilibri ;
+                        :Equilibri ;
                :nom "Flexio de genoll" .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Flexio_maluc
 :Flexio_maluc rdf:type owl:NamedIndividual ,
-                       :Equilibri ,
-                       :FortalesaEquilibri ;
+                       :Equilibri ;
               :nom "Flexio de maluc" .
 
 
@@ -361,6 +351,24 @@
        :nom "Remar" .
 
 
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#ResistenciaAlt
+:ResistenciaAlt rdf:type owl:NamedIndividual ,
+                         :Realitzacio ;
+                :duracio 40 .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#ResistenciaBaix
+:ResistenciaBaix rdf:type owl:NamedIndividual ,
+                          :Realitzacio ;
+                 :duracio 20 .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#ResistenciaModerat
+:ResistenciaModerat rdf:type owl:NamedIndividual ,
+                             :Realitzacio ;
+                    :duracio 30 .
+
+
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Rotacio_doble_maluc
 :Rotacio_doble_maluc rdf:type owl:NamedIndividual ,
                               :Flexibilitat ;
@@ -379,61 +387,33 @@
                       :nom "Rotacio simple de maluc" .
 
 
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#SeriesAlt
+:SeriesAlt rdf:type owl:NamedIndividual ,
+                    :Realitzacio ;
+           :duracio 10 .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#SeriesBaix
+:SeriesBaix rdf:type owl:NamedIndividual ,
+                     :Realitzacio ;
+            :duracio 6 .
+
+
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#SeriesModerat
+:SeriesModerat rdf:type owl:NamedIndividual ,
+                        :Realitzacio ;
+               :duracio 8 .
+
+
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Sobrepes
 :Sobrepes rdf:type owl:NamedIndividual ,
                    :Patologia ;
           :nom "Sobrepes" .
 
 
-###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#10min
-<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#10min> rdf:type owl:NamedIndividual ,
-                                                                                           :Realitzacio ;
-                                                                                  :duracio 10 .
-
-
-###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#15min
-<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#15min> rdf:type owl:NamedIndividual ,
-                                                                                           :Realitzacio ;
-                                                                                  :duracio 15 .
-
-
-###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#25min
-<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#25min> rdf:type owl:NamedIndividual ,
-                                                                                           :Realitzacio ;
-                                                                                  :duracio 25 .
-
-
-###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#40min
-<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#40min> rdf:type owl:NamedIndividual ,
-                                                                                           :Realitzacio ;
-                                                                                  :duracio 40 .
-
-
-###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#6min
-<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#6min> rdf:type owl:NamedIndividual ,
-                                                                                          :Realitzacio ;
-                                                                                 :duracio 6 .
-
-
-###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#8min
-<http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#8min> rdf:type owl:NamedIndividual ,
-                                                                                          :Realitzacio ;
-                                                                                 :duracio 8 .
-
-
 #################################################################
 #    General axioms
 #################################################################
-
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( :Equilibri
-                :Flexibilitat
-                :Fortalesa
-                :FortalesaEquilibri
-                :Resistencia
-              )
-] .
-
 
 [ rdf:type owl:AllDisjointClasses ;
   owl:members ( :Exercici

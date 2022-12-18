@@ -2,7 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology ontologia.owl
-;;; :Date 15/12/2022 02:38:53
+;;; :Date 18/12/2022 05:03:40
 
 (defclass Exercici
     (is-a USER)
@@ -29,12 +29,6 @@
 )
 
 (defclass Fortalesa
-    (is-a Exercici)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass FortalesaEquilibri
     (is-a Exercici)
     (role concrete)
     (pattern-match reactive)
@@ -110,7 +104,7 @@
 )
 
 (definstances instances
-    ([Aixecament_lateral_cama] of FortalesaEquilibri
+    ([Aixecament_lateral_cama] of Equilibri
          (nom  "Aixecament lateral de cames")
     )
 
@@ -182,7 +176,7 @@
          (nom  "Extensio de genoll")
     )
 
-    ([Extensio_maluc] of FortalesaEquilibri
+    ([Extensio_maluc] of Equilibri
          (nom  "Extensio de maluc")
     )
 
@@ -190,7 +184,7 @@
          (nom  "Extensio de triceps")
     )
 
-    ([Felxio_plantar] of FortalesaEquilibri
+    ([Felxio_plantar] of Equilibri
          (nom  "Flexio plantar")
     )
 
@@ -198,11 +192,11 @@
          (nom  "Flexio d'espatlla")
     )
 
-    ([Flexio_genoll] of FortalesaEquilibri
+    ([Flexio_genoll] of Equilibri
          (nom  "Flexio de genoll")
     )
 
-    ([Flexio_maluc] of FortalesaEquilibri
+    ([Flexio_maluc] of Equilibri
          (nom  "Flexio de maluc")
     )
 
@@ -238,6 +232,18 @@
          (nom  "Remar")
     )
 
+    ([ResistenciaAlt] of Realitzacio
+         (duracio  40)
+    )
+
+    ([ResistenciaBaix] of Realitzacio
+         (duracio  20)
+    )
+
+    ([ResistenciaModerat] of Realitzacio
+         (duracio  30)
+    )
+
     ([Rotacio_doble_maluc] of Flexibilitat
          (nom  "Rotacio doble de maluc")
     )
@@ -250,32 +256,20 @@
          (nom  "Rotacio simple de maluc")
     )
 
-    ([Sobrepes] of Patologia
-         (nom  "Sobrepes")
-    )
-
-    ([10min] of Realitzacio
+    ([SeriesAlt] of Realitzacio
          (duracio  10)
     )
 
-    ([15min] of Realitzacio
-         (duracio  15)
-    )
-
-    ([25min] of Realitzacio
-         (duracio  25)
-    )
-
-    ([40min] of Realitzacio
-         (duracio  40)
-    )
-
-    ([6min] of Realitzacio
+    ([SeriesBaix] of Realitzacio
          (duracio  6)
     )
 
-    ([8min] of Realitzacio
+    ([SeriesModerat] of Realitzacio
          (duracio  8)
+    )
+
+    ([Sobrepes] of Patologia
+         (nom  "Sobrepes")
     )
 
 )
