@@ -360,19 +360,19 @@
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#ResistenciaAlt
 :ResistenciaAlt rdf:type owl:NamedIndividual ,
                          :Realitzacio ;
-                :duracio 40 .
+                :duracio 25 .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#ResistenciaBaix
 :ResistenciaBaix rdf:type owl:NamedIndividual ,
                           :Realitzacio ;
-                 :duracio 20 .
+                 :duracio 15 .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#ResistenciaModerat
 :ResistenciaModerat rdf:type owl:NamedIndividual ,
                              :Realitzacio ;
-                    :duracio 30 .
+                    :duracio 20 .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Rotacio_doble_maluc
@@ -396,19 +396,19 @@
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#SeriesAlt
 :SeriesAlt rdf:type owl:NamedIndividual ,
                     :Realitzacio ;
-           :duracio 10 .
+           :duracio 5 .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#SeriesBaix
 :SeriesBaix rdf:type owl:NamedIndividual ,
                      :Realitzacio ;
-            :duracio 6 .
+            :duracio 3 .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#SeriesModerat
 :SeriesModerat rdf:type owl:NamedIndividual ,
                         :Realitzacio ;
-               :duracio 8 .
+               :duracio 4 .
 
 
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Sobrepes

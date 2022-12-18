@@ -2,7 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology ontologia.owl
-;;; :Date 18/12/2022 12:04:36
+;;; :Date 18/12/2022 22:15:41
 
 (defclass Exercici
     (is-a USER)
@@ -237,15 +237,15 @@
     )
 
     ([ResistenciaAlt] of Realitzacio
-         (duracio  40)
+         (duracio  25)
     )
 
     ([ResistenciaBaix] of Realitzacio
-         (duracio  20)
+         (duracio  15)
     )
 
     ([ResistenciaModerat] of Realitzacio
-         (duracio  30)
+         (duracio  20)
     )
 
     ([Rotacio_doble_maluc] of Flexibilitat
@@ -261,15 +261,15 @@
     )
 
     ([SeriesAlt] of Realitzacio
-         (duracio  10)
+         (duracio  5)
     )
 
     ([SeriesBaix] of Realitzacio
-         (duracio  6)
+         (duracio  3)
     )
 
     ([SeriesModerat] of Realitzacio
-         (duracio  8)
+         (duracio  4)
     )
 
     ([Sobrepes] of Patologia
