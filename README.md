@@ -20,7 +20,7 @@ precisas.
 - [x] El documento está organizado de forma lógica.
 - [x] Las diferentes secciones y subsecciones están bien ligadas, y facilitan el seguimiento del contenido.
 - [x] El documento en una primera parte plantea el problema, en una segunda desarrolla y elabora la solución y en una tercera resume los resultados y plantea las conclusiones.
-- [ ] Los contenidos son muy claros. Las frases son cortas y fáciles de entender a la primera.
+- [x] Los contenidos son muy claros. Las frases son cortas y fáciles de entender a la primera.
 
 #### Gràfics
 - [ ] Todos los gráficos y figuras usados tienen sentido y ayudan a entender la explicación.
@@ -29,7 +29,7 @@ precisas.
 #### Identificació
 - [x] La descripción del problema es algo más elaborada que la que ya hay en el enunciado
 - [x] Análisis detallado de la viabilidad de construir el SBC
-- [ ] Identificación de las fuentes de conocimiento
+- [x] Identificación de las fuentes de conocimiento
 - [x] Descripción clara de los objetivos del problema y los resultados del sistema
 
 #### Conceptualització
