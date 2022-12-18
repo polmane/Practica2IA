@@ -34,9 +34,9 @@ precisas.
 
 #### Conceptualització
 - [x] Descripción del los conceptos del dominio
-- [ ] Descripción detallada de los problemas y subproblemas que intervienen en la resolución
+- [x] Descripción detallada de los problemas y subproblemas que intervienen en la resolución
 - [ ] Ejemplos del conocimiento experto extraído del dominio
-- [ ] Descripción informal del proceso de resolución y como se organizan los problemas y subproblemas
+- [x] Descripción informal del proceso de resolución y como se organizan los problemas y subproblemas
 
 #### Formalització
 - [ ] Se explica detalladamente como se ha construido la ontología
