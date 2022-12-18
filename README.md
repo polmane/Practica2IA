@@ -35,7 +35,7 @@ precisas.
 #### Conceptualització
 - [x] Descripción del los conceptos del dominio
 - [x] Descripción detallada de los problemas y subproblemas que intervienen en la resolución
-- [ ] Ejemplos del conocimiento experto extraído del dominio
+- [x] Ejemplos del conocimiento experto extraído del dominio
 - [x] Descripción informal del proceso de resolución y como se organizan los problemas y subproblemas
 
 #### Formalització
