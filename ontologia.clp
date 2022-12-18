@@ -2,7 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology ontologia.owl
-;;; :Date 18/12/2022 05:03:40
+;;; :Date 18/12/2022 12:04:36
 
 (defclass Exercici
     (is-a USER)
@@ -130,6 +130,10 @@
 
     ([Cardiovascular] of Patologia
          (nom  "Cardiovascular")
+    )
+
+    ([Correr] of Resistencia
+         (nom  "Correr")
     )
 
     ([Dansa] of Resistencia

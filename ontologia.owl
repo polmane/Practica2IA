@@ -201,6 +201,12 @@
                 :nom "Cardiovascular" .
 
 
+###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Correr
+:Correr rdf:type owl:NamedIndividual ,
+                 :Resistencia ;
+        :nom "Correr" .
+
+
 ###  http://www.semanticweb.org/polet/ontologies/2022/11/Ontologiaplanificador#Dansa
 :Dansa rdf:type owl:NamedIndividual ,
                 :Resistencia ;
