@@ -39,10 +39,10 @@ precisas.
 - [x] Descripción informal del proceso de resolución y como se organizan los problemas y subproblemas
 
 #### Formalització
-- [ ] Se explica detalladamente como se ha construido la ontología
-- [ ] La ontología incluye todos los conceptos, todos los atributos necesarios, todas las relaciones necesarias
+- [x] Se explica detalladamente como se ha construido la ontología
+- [x] La ontología incluye todos los conceptos, todos los atributos necesarios, todas las relaciones necesarias
 - [ ] Documentación detallada de la ontología (se describen todos los elementos de la ontología), incluyendo un grafo de la  jerarquía de conceptos Se detalla el proceso de razonamiento de cada subproblema identificado 
-- [ ] Justificación de la metodología de  resolución de problemas más adecuada y como los problemas identificados en la fase anterior encajan en la metodología
+- [x] Justificación de la metodología de  resolución de problemas más adecuada y como los problemas identificados en la fase anterior encajan en la metodología
 
 #### Implementació
 - [ ] Hay una representación adecuada de la ontología
