@@ -294,9 +294,9 @@
 ;;;     Load, reset and run.
 ;;;======================================================
 
-;;;------------------------------------------------------------------------------------------------------------------------------------------------------
-;;;----------  					 MAIN					 		---------- 								MAIN
-;;;------------------------------------------------------------------------------------------------------------------------------------------------------
+;;;-----------------------------------------------------------------------
+;;;----------  					 MAIN					 		----------
+;;;-----------------------------------------------------------------------
 
 ;; Aquest es el modul principal
 
@@ -304,19 +304,18 @@
 
 ;;; Modul de recopilació
 (defmodule info-usuari
-	(import MAIN ?ALL)
-	(export ?ALL)
+	(export deftemplate ?ALL)
+    (import MAIN ?ALL)
 )
 
 ;;; Modul d analisi
 (defmodule analisi
+	(import info-usuari deftemplate ?ALL)
 	(import MAIN ?ALL)
-	(export ?ALL)
 )
 
 (defmodule sintesi
 	(import MAIN ?ALL)
-	(export ?ALL)
 )
 
 (defmodule imprimir
@@ -336,12 +335,12 @@
 )
 
 
-;;;------------------------------------------------------------------------------------------------------------------------------------------------------
-;;;----------  					TEMPLATES					 		---------- 								TEMPLATES
-;;;------------------------------------------------------------------------------------------------------------------------------------------------------
+;;;---------------------------------------------------------------------------
+;;;----------  					TEMPLATES					 		----------
+;;;---------------------------------------------------------------------------
 
 ;;; Template per les preguntes generals de l usuari
-(deftemplate MAIN::pregunta-usuari
+(deftemplate info-usuari::pregunta-usuari
 	(slot edat (type INTEGER))
     (slot correr (type SYMBOL))
     (slot nedar (type SYMBOL))
@@ -350,7 +349,7 @@
 )
 
 ;;; Template per el nivell fisic de la persona
-(deftemplate MAIN::punts-fisic
+(deftemplate info-usuari::punts-fisic
 	(slot flexibilitat (type INTEGER) (default 0))
 	(slot equilibri (type INTEGER) (default 0))
 	(slot forca (type INTEGER) (default 0))
@@ -358,14 +357,13 @@
     (slot total (type INTEGER) (default 0))
 )
 
-(deftemplate MAIN::nivell-fisic
+(deftemplate analisi::nivell-fisic
     (slot flexibilitat (type STRING))
 	(slot equilibri (type STRING))
 	(slot forca (type STRING))
 	(slot resistencia (type STRING))
     (slot total (type STRING))
     (slot edat (type STRING))
-    (multislot recomanacions (type STRING))
 )
 
 (deftemplate MAIN::temporal
@@ -373,10 +371,29 @@
     (slot minuts_dia (type INTEGER))
 )
 
+(deftemplate sintesi::dia-actual
+    (slot dia (type INSTANCE))
+)
 
-;;****************
-;;* DEFFUNCTIONS *
-;;****************
+(deftemplate sintesi::num-dia-actual
+    (slot count_dies (type INTEGER))
+)
+
+(deftemplate sintesi::exercicis-pendents
+    (multislot flexibilitat (type INSTANCE))
+    (multislot forca (type INSTANCE))
+    (multislot resistencia (type INSTANCE))
+    (multislot equilibri (type INSTANCE))
+)
+
+(deftemplate imprimir::min
+    (slot count (type INTEGER))
+)
+
+
+;;;---------------------------------------------------------------------------
+;;;----------  					DEFFUNCTIONS		                ----------
+;;;---------------------------------------------------------------------------
 
 (deffunction MAIN::pregunta (?pregunta $?valors-permesos)
     (progn$
@@ -481,12 +498,21 @@
     )
 )
 
+(deffunction sintesi::exercici-cap-al-dia (?exercici ?dia)
+    
+    (bind ?realitzacio (send ?exercici get-es_realitza))
+    (bind ?tr (send ?dia get-temps_restant))
+    (bind ?duracio (send ?realitzacio get-duracio))
+    (if (>= ?tr ?duracio)
+        then TRUE
+        else FALSE
+    )
+)
 
 
-
-;;***********************
-;;** MODUL INFO USUARI **
-;;***********************
+;;;---------------------------------------------------------------------------
+;;;----------  			    DEFRULES MODUL INFO USUARI				----------
+;;;---------------------------------------------------------------------------
 
 (defrule info-usuari::pregunta-edat "Quina edat tens"
 	(not (pregunta-usuari))
@@ -641,7 +667,9 @@
 )
 
 
-;;;;;;;;;;;;;;; EQUILIBRI ABSTRACCIO PROBLEMA
+;;;---------------------------------------------------------------------------
+;;;----------  			    DEFRULES MODUL ANALISI  				----------
+;;;---------------------------------------------------------------------------
 (defrule analisi::abstraccio-nivell-equilibri-baix "mirem si es nivell d equilibri baix"
     (punts-fisic (equilibri ?equilibri))
     (not (abstraccio-nivell-equilibri-feta))
@@ -886,59 +914,6 @@
 )
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; equilibri flexibilitat forca resistencia
-(defrule analisi::prioritat_equilibri "Exercicis equilibri prioritat"
-    (pregunta-usuari (patologies $?patologies))
-    ?u <- (nivell-fisic (recomanacions $?recomanacions))
-    (not(prioritat_equilibri_feta))
-    (test (or (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Sobrepes] $?patologies)))
-    
-    =>
-    
-    (bind $?recomanacions (insert$ $?recomanacions 1 "equilibri"))
-    (modify ?u (recomanacions $?recomanacions))
-    (assert(prioritat_equilibri_feta))
-)
-
-(defrule analisi::prioritat_flexibilitat "Exercicis flexibilitat prioritat"
-    (pregunta-usuari (patologies $?patologies))
-    ?u <- (nivell-fisic (recomanacions $?recomanacions))
-    (not(prioritat_flexibilitat_feta))
-    (test (or (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies)))
-    
-    =>
-    
-    (bind $?recomanacions (insert$ $?recomanacions 1 "flexibilitat"))
-    (modify ?u (recomanacions $?recomanacions))
-    (assert(prioritat_flexibilitat_feta))
-)
-
-(defrule analisi::prioritat_forca "Exercicis forca prioritat"
-    (pregunta-usuari (patologies $?patologies))
-    ?u <- (nivell-fisic (recomanacions $?recomanacions))
-    (not(prioritat_forca_feta))
-    (test (or (member [Artritis] $?patologies) (member [Fragilitat] $?patologies) (member [Osteoporosi] $?patologies)))
-    
-    =>
-    
-    (bind $?recomanacions (insert$ $?recomanacions 1 "forca"))
-    (modify ?u (recomanacions $?recomanacions))
-    (assert(prioritat_forca_feta))
-)
-
-(defrule analisi::prioritat_resistencia "Exercicis resistencia prioritat"
-    (pregunta-usuari (patologies $?patologies))
-    ?u <- (nivell-fisic (recomanacions $?recomanacions))
-    (not(prioritat_resistencia_feta))
-    (test (or (member [Cardiovascular] $?patologies) (member [Diabetis] $?patologies) (member [Hipertensio] $?patologies) (member [Malaltia_pulmonar] $?patologies) (member [Sobrepes] $?patologies)))
-    
-    =>
-    
-    (bind $?recomanacions (insert$ $?recomanacions 1 "resistencia"))
-    (modify ?u (recomanacions $?recomanacions))
-    (assert(prioritat_resistencia_feta))
-)
-
 ;;;;;;;;;;;;;;;;;ABSTRACCIO EDAT
 (defrule analisi::abstraccio_anys_pocs "Abstraccio de pocs anys de la persona"
     (pregunta-usuari (edat ?edat))
@@ -1070,34 +1045,10 @@
 
 ;    n_total           baix moderada alta
 ; edat           (+0)(+2)  (+15)(+1)  (+30)(+0)
-; pocs(+30)(+0)        5(60) 4(75)   3(90)     300 300 270     180 300 450
-; bastants(+15)(+1)    6(45) 5(60)   4(75)     270 300 300     180 300 450
-; molts(+0)(+2)        7(30) 6(45)   5(60)     210 270 300     150 270 420
+; pocs(+30)(+0)        5(60) 4(75)   3(90)     300 300 270     
+; bastants(+15)(+1)    6(45) 5(60)   4(75)     270 300 300     
+; molts(+0)(+2)        7(30) 6(45)   5(60)     210 270 300     
 
-; (defrule analisi::temps_solucio "Calculem quantitat de dies i minuts per dia"
-;     ?n <- (nivell-fisic (total ?total))
-;     ?e <- (pregunta-usuari (edat ?edat))
-;     (not (temporal))
-;     =>
-;     (bind ?m (+ (* -2 ?edat) 200))
-;     (bind ?d (div (- (* 0.1 ?edat) 3.5) 1))
-    
-;     (if (> ?edat 85)
-;         then (bind ?m 30)
-;             (bind ?d 5)
-;     )
-
-;     (if (eq ?total "moderat")
-;         then (bind ?m (+ ?m 10))
-;                 (bind ?d (+ ?d 1))
-        
-;         else (if (eq ?total "alt")
-;             then (bind ?m (+ ?m 20))
-;                     (bind ?d (+ ?d 2))
-;         )
-;     )
-;     (assert (temporal (num_dies ?d) (minuts_dia ?m)))
-; )
 
 (defrule analisi::refinament_correr "treure Correr si usuari ho ha dit"
     (pregunta-usuari (correr ?correr&:(eq ?correr FALSE)))
@@ -1133,7 +1084,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;
 
-(defrule analisi::refinament_realitzacio "asociacio heuristica"
+(defrule analisi::refinament_realitzacio "assignacio realitzacio"
     (declare (salience -100))
     (nivell-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
     =>
@@ -1146,23 +1097,10 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(deftemplate sintesi::dia-actual
-    (slot dia (type INSTANCE))
-)
+;;;---------------------------------------------------------------------------
+;;;----------  			    DEFRULES MODUL SINTESI				    ----------
+;;;---------------------------------------------------------------------------
 
-(deftemplate sintesi::num-dia-actual
-    (slot count_dies (type INTEGER))
-)
-
-(deftemplate sintesi::exercicis-pendents
-    (multislot flexibilitat (type INSTANCE))
-    (multislot forca (type INSTANCE))
-    (multislot resistencia (type INSTANCE))
-    (multislot equilibri (type INSTANCE))
-)
 
 (deffacts sintesi::iniciar-sintesi
     (num-dia-actual (count_dies 1))
@@ -1227,7 +1165,6 @@
 
     =>
 
-    (printout t "obrir dia" crlf)
     (bind ?diaNou (make-instance (sym-cat dia- (gensym)) of Solucio))
     (send ?diaNou put-dia_solucio ?cd)
     (send ?diaNou put-temps_restant ?md)
@@ -1245,7 +1182,6 @@
 
     =>
     
-    (printout t "afegint ex escalfament" crlf)
     (while (> (send ?inst get-temps_restant) (* ?md (/ 90 100))) do
         (bind $?ll (send ?inst get-composta_per))
         (bind ?ex_escollit (random-slot ?efe))
@@ -1257,7 +1193,6 @@
         
         ; Borrem de la llista dexercicis pendents
         (bind $?efe (delete-member$ $?efe ?ex_escollit))
-        (printout t $?efe crlf)
     )
     (modify ?e (flexibilitat $?efe))
     (assert(exercici-escalfament-afegit))
@@ -1272,7 +1207,6 @@
 
     =>
 
-    (printout t "afegint ex resistencia" crlf)
     (send ?inst get-temps_restant)
     (bind $?ll (send ?inst get-composta_per))
     (bind ?ex_escollit (random-slot ?ere))
@@ -1284,7 +1218,6 @@
     
     ; Borrem de la llista dexercicis pendents
     (bind $?ere (delete-member$ $?ere ?ex_escollit))
-    (printout t $?ere crlf)
     
     (modify ?e (resistencia $?ere))
     (assert(exercici-resistencia-afegit))
@@ -1299,7 +1232,6 @@
 
     =>
 
-    (printout t "afegint ex equilibri forca" crlf)
     (while (> (send ?inst get-temps_restant) (* ?md (/ 5 100))) do
         (bind $?ll (send ?inst get-composta_per))
         (bind ?ex_escollit (random-slot ?efo))
@@ -1318,27 +1250,12 @@
         (bind ?realitzacio (send ?ex_escollit get-es_realitza))
         (send ?inst put-temps_restant (- ?tr (send ?realitzacio get-duracio)))
         
-        ; Borrem de la llista dexercicis pendents
-        ; (bind $?efe (delete-member$ $?efe ?ex_escollit))
-        ; (printout t $?efe crlf)
     )
-    ; (modify ?e (flexibilitat $?efe))
-
 
     (assert(exercici-equilibri-forca-afegit))
 )
 
-(deffunction sintesi::exercici-cap-al-dia (?exercici ?dia)
-    
-    (bind ?realitzacio (send ?exercici get-es_realitza))
-    (bind ?tr (send ?dia get-temps_restant))
-    (bind ?duracio (send ?realitzacio get-duracio))
-    ; (printout t ?tr ?duracio crlf)
-    (if (>= ?tr ?duracio)
-        then TRUE
-        else FALSE
-    )
-)
+
 
 ;; TANCAR DIA COM A COMPLERT
 (defrule sintesi::tancar-dia-ple "Donar un dia per tancat quan ja estan planificats totes les activitats que hi caben"
@@ -1352,12 +1269,9 @@
     ?ega <- (exercici-equilibri-forca-afegit)
 
     ?ep <- (exercicis-pendents (flexibilitat $?efl) (forca $?efo) (equilibri $?eeq) (resistencia $?ere))
-    ; (test (not (any-instancep ((?inst Exercici)) (and (exercici-cap-al-dia ?inst ?dia) (or (member ?inst $?efl) (member ?inst $?efo) (member ?inst $?eeq) (member ?inst $?ere))))))
 
     =>
-    ; (printout t )
-    ; (printout t (not (any-instancep ((?inst Exercici)) (eq (exercici-cap-al-dia ?inst ?dia) TRUE))) crlf)
-    ; (printout t ?dia crlf)
+   
     (modify ?nda (count_dies (+ ?cd 1)))
     (retract ?da)
     (retract ?eea)
@@ -1367,7 +1281,7 @@
 )
 
 
-(defrule passar-a-imprimir "Passem a imprimir"
+(defrule sintesi::passar-a-imprimir "Passem a imprimir"
     ?nda <- (num-dia-actual (count_dies ?cd))
     (temporal (num_dies ?nd))
     (test (> ?cd ?nd))
@@ -1377,66 +1291,9 @@
     (focus imprimir)
 )
 
-
-
-
-
-
-; (defclass Solucio
-;     (is-a USER)
-;     (role concrete)
-;     (pattern-match reactive)
-;     (multislot composta_per
-;         (type INSTANCE)
-;         (create-accessor read-write))
-;     (slot dia_solucio
-;         (type INTEGER)
-;         (create-accessor read-write))
-;     (slot temps_restant
-;         (type INTEGER)
-;         (create-accessor read-write))
-; )
-
-; (defrule sintesi::relacio-exercicis "solucio abstracta"
-;     ?u <- (nivell-fisic (equilibri ?equilibri) (flexibilitat ?flexibilitat) (forca ?forca) (resistencia ?resistencia))
-;       ; cada ex dura 15 min
-;     =>
-;     (bind $?obj-exercicis (find-all-instances ((?inst Exercici)) TRUE))
-;     (bind $?nom-exercicis (create$ ))
-; 	(loop-for-count (?i 1 (length$ $?obj-exercicis)) do
-; 		(bind ?curr-obj (nth$ ?i ?obj-exercicis))
-;           (send ?curr-obj put-es_realitza 15)
-; 	)
-;     ;; (focus sintesi)
-; )
-
-
-
-; (defrule sintesi::solRand "solucio aleatoria"
-;      (declare (salience 100))
-;      =>
-;      (bind ?mindia (+ (mod (random) 61) 30))
-;      (bind ?ndies (+ (mod (random) 5) 3))
-;      (bind ?exsdia (/ ?mindia 15))     ; cada ex dura 15 min
-;      (bind $?exs (find-all-instances ((?inst Exercici)) TRUE))
-
-;      (loop-for-count (?i 1 ?ndies) do
-;           (bind ?llista (create$))
-;           (bind ?sol (make-instance (sym-cat dia- (gensym)) of Solucio))
-;           (loop-for-count (?j 1 ?exsdia) do
-;                (bind ?rd (random-slot $?exs))
-;                (bind $?llista (insert$ $?llista (+ (length$ $?llista) 1) ?rd))
-;           )
-;           (send ?sol put-composta_per $?llista)
-;           (send ?sol put-dia_solucio ?i)
-;      )
-;      (focus imprimir)
-
-; )
-
-(deftemplate imprimir::min
-    (slot count (type INTEGER))
-)
+;;;---------------------------------------------------------------------------
+;;;----------  			    DEFRULES MODUL IMPRIMIR 				----------
+;;;---------------------------------------------------------------------------
 
 (deffacts imprimir::hechos-iniciales
     (min (count 1))
@@ -1464,13 +1321,11 @@
     (format t "Els exercicis a fer el dia %d son:" ?n)
     (printout t crlf)
     (printout t "-------------------------------------------------------------" crlf)
-    ;(printout t crlf)
     (bind $?exercicis(send ?Dia get-composta_per))
     (loop-for-count (?i 1 (length$ $?exercicis)) do
             (bind ?curr-ex (nth$ ?i $?exercicis))
             (bind ?nom-exercici (send ?curr-ex get-nom))
             (bind ?realitzacio_ex (send ?curr-ex get-es_realitza))
-;;;				(printout t crlf)
             (format t "%s - %d min" ?nom-exercici (send ?realitzacio_ex get-duracio))
             (printout t crlf)
     )
