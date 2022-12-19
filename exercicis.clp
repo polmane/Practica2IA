@@ -1218,6 +1218,7 @@
 
 ;; INICIAR UN NOU DIA
 (defrule sintesi::obrir-nou-dia "Obrir un dia on anirem afegint realitzacions i exercicis"
+    (declare (salience 8))
     (not (dia-a-mig-omplir))
     (num-dia-actual (count_dies ?cd))
     (temporal (num_dies ?nd) (minuts_dia ?md))
@@ -1234,7 +1235,7 @@
 )
 
 (defrule sintesi::afegir-exercicis-escalfament "Afegir exercici escalfament"
-	; (declare (salience 1000))
+	(declare (salience 6))
     ?e <- (exercicis-pendents (flexibilitat $?ef))
     (temporal (minuts_dia ?md))
     (dia-actual (dia ?inst))
@@ -1244,7 +1245,7 @@
     =>
     
     (printout t "afegir" crlf)
-    (while (> (send ?inst get-temps_restant) (* ?md (/ 90 100))) do
+    (while (> (send ?inst get-temps_restant) (* ?md (/ 0 100))) do
         (bind $?ll (send ?inst get-composta_per))
         (bind ?ex_escollit (random-slot ?ef))
         (send ?inst put-composta_per (insert$ ?ll (+ (length$ ?ll) 1)  ?ex_escollit))
@@ -1253,12 +1254,16 @@
         (bind ?realitzacio (send ?ex_escollit get-es_realitza))
         (send ?inst put-temps_restant (- ?tr (send ?realitzacio get-duracio)))
     )
+    (assert(exercici-afegit))
 )
 
 (deffunction sintesi::exercici-cap-al-dia (?exercici ?dia)
+    
     (bind ?realitzacio (send ?exercici get-es_realitza))
     (bind ?tr (send ?dia get-temps_restant))
-    (if (>= ?tr (send ?realitzacio get-duracio))
+    (bind ?duracio (send ?realitzacio get-duracio))
+    ; (printout t ?tr ?duracio crlf)
+    (if (>= ?tr ?duracio)
         then TRUE
         else FALSE
     )
@@ -1266,15 +1271,20 @@
 
 ;; TANCAR DIA COM A COMPLERT
 (defrule sintesi::tancar-dia-ple "Donar un dia per tancat quan ja estan planificats totes les activitats que hi caben"
+    (declare (salience 4))
     ?d <- (dia-a-mig-omplir)
     ?nda <- (num-dia-actual (count_dies ?cd))
     ?da <- (dia-actual (dia ?dia))
-    ?ep <- (exercicis-pendents (flexibilitat $?efl) (forca $?efo) (equilibri $?eeq) (resistencia $?ere))
-    (test (not (any-instancep ((?inst Exercici)) (and (exercici-cap-al-dia ?inst ?dia) (or (member ?inst $?efl) (member ?inst $?efo) (member ?inst $?eeq) (member ?inst $?ere))))))
+
+    (exercici-afegit)
+
+    ;?ep <- (exercicis-pendents (flexibilitat $?efl) (forca $?efo) (equilibri $?eeq) (resistencia $?ere))
+    (test (eq (not (any-instancep ((?inst Exercici)) (eq (exercici-cap-al-dia ?inst ?dia) TRUE))) TRUE)) ;(or (member ?inst $?efl) (member ?inst $?efo) (member ?inst $?eeq) (member ?inst $?ere))))))
 
     =>
-    
-    (printout t "tancar dia" crlf)
+    ; (printout t )
+    ; (printout t (not (any-instancep ((?inst Exercici)) (eq (exercici-cap-al-dia ?inst ?dia) TRUE))) crlf)
+    ; (printout t ?dia crlf)
     (modify ?nda (count_dies (+ ?cd 1)))
     (retract ?da)
     (retract ?d)
