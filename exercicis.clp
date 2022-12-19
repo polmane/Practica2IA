@@ -2,7 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology ontologia.owl
-;;; :Date 18/12/2022 12:04:36
+;;; :Date 18/12/2022 22:15:41
 
 (defclass Exercici
     (is-a USER)
@@ -237,15 +237,15 @@
     )
 
     ([ResistenciaAlt] of Realitzacio
-         (duracio  40)
+         (duracio  25)
     )
 
     ([ResistenciaBaix] of Realitzacio
-         (duracio  20)
+         (duracio  15)
     )
 
     ([ResistenciaModerat] of Realitzacio
-         (duracio  30)
+         (duracio  20)
     )
 
     ([Rotacio_doble_maluc] of Flexibilitat
@@ -261,15 +261,15 @@
     )
 
     ([SeriesAlt] of Realitzacio
-         (duracio  10)
+         (duracio  5)
     )
 
     ([SeriesBaix] of Realitzacio
-         (duracio  6)
+         (duracio  3)
     )
 
     ([SeriesModerat] of Realitzacio
-         (duracio  8)
+         (duracio  4)
     )
 
     ([Sobrepes] of Patologia
@@ -277,6 +277,7 @@
     )
 
 )
+
 
 
 ; XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx
@@ -1147,20 +1148,139 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; (deftemplate
-; )
+(deftemplate sintesi::dia-actual
+    (slot dia (type INSTANCE))
+)
 
-; (defrule sintesi::obrir-nou-dia "Obrir un dia on anirem afegint realitzacions i exercicis"
-;     (not (dia-a-mig-omplir))
-;     (temporal (num_dies ?d))
-; 	(test (> ?d 0))
+(deftemplate sintesi::num-dia-actual
+    (slot count_dies (type INTEGER))
+)
 
-;     =>
+(deftemplate sintesi::exercicis-pendents
+    (multislot flexibilitat (type INSTANCE))
+    (multislot forca (type INSTANCE))
+    (multislot resistencia (type INSTANCE))
+    (multislot equilibri (type INSTANCE))
+)
 
-;     (bind ?diaNuevo (make-instance (sym-cat dia- (gensym)) of Solucio))
+(deffacts sintesi::iniciar-sintesi
+    (num-dia-actual (count_dies 1))
+    (exercicis-pendents)
+)
 
-;     (assert (dia-a-mig-omplir))
-; )
+;;INI FLEXIBILITAT
+(defrule sintesi::iniciar-exercicis-flexibilitat-pendents "posar tot el conjunt"
+    (declare (salience 10))
+    ?e <- (exercicis-pendents (flexibilitat $?ef)) 
+    (test (<= (length$ $?ef) 0))
+
+    =>
+
+    (bind $?llista (find-all-instances ((?inst Flexibilitat)) TRUE))
+    (modify ?e (flexibilitat $?llista))
+)
+
+;;INI FORCA
+(defrule sintesi::iniciar-exercicis-forca-pendents "posar tot el conjunt"
+    (declare (salience 10))
+    ?e <- (exercicis-pendents (forca $?ef)) 
+    (test (<= (length$ $?ef) 0))
+
+    =>
+
+    (bind $?llista (find-all-instances ((?inst Fortalesa)) TRUE))
+    (modify ?e (forca $?llista))
+)
+
+;;INI EQUILIBRI
+(defrule sintesi::iniciar-exercicis-equilibri-pendents "posar tot el conjunt"
+    (declare (salience 10))
+    ?e <- (exercicis-pendents (equilibri $?ef)) 
+    (test (<= (length$ $?ef) 0))
+
+    =>
+
+    (bind $?llista (find-all-instances ((?inst Equilibri)) TRUE))
+    (modify ?e (equilibri $?llista))
+)
+
+;;INI RESISTENCIA
+(defrule sintesi::iniciar-exercicis-resistencia-pendents "posar tot el conjunt"
+    (declare (salience 10))
+    ?e <- (exercicis-pendents (resistencia $?ef)) 
+    (test (<= (length$ $?ef) 0))
+
+    =>
+
+    (bind $?llista (find-all-instances ((?inst Resistencia)) TRUE))
+    (modify ?e (resistencia $?llista))
+)
+
+;; INICIAR UN NOU DIA
+(defrule sintesi::obrir-nou-dia "Obrir un dia on anirem afegint realitzacions i exercicis"
+    (not (dia-a-mig-omplir))
+    (num-dia-actual (count_dies ?cd))
+    (temporal (num_dies ?nd) (minuts_dia ?md))
+	(test (<= ?cd ?nd))
+
+    =>
+
+    (printout t "obrir dia" crlf)
+    (bind ?diaNou (make-instance (sym-cat dia- (gensym)) of Solucio))
+    (send ?diaNou put-dia_solucio ?cd)
+    (send ?diaNou put-temps_restant ?md)
+    (assert (dia-actual (dia ?diaNou)))
+    (assert (dia-a-mig-omplir))
+)
+
+(defrule sintesi::afegir-exercicis-escalfament "Afegir exercici escalfament"
+	; (declare (salience 1000))
+    ?e <- (exercicis-pendents (flexibilitat $?ef))
+    (temporal (minuts_dia ?md))
+    (dia-actual (dia ?inst))
+    (test (> (send ?inst get-temps_restant) (* ?md (/ 9 10))))
+    (test (> (length$ $?ef) 0))
+
+    =>
+    
+    (printout t "afegir" crlf)
+    (while (> (send ?inst get-temps_restant) (* ?md (/ 90 100))) do
+        (bind $?ll (send ?inst get-composta_per))
+        (bind ?ex_escollit (random-slot ?ef))
+        (send ?inst put-composta_per (insert$ ?ll (+ (length$ ?ll) 1)  ?ex_escollit))
+
+        (bind ?tr (send ?inst get-temps_restant))
+        (bind ?realitzacio (send ?ex_escollit get-es_realitza))
+        (send ?inst put-temps_restant (- ?tr (send ?realitzacio get-duracio)))
+    )
+)
+
+(deffunction sintesi::exercici-cap-al-dia (?exercici ?dia)
+    (bind ?realitzacio (send ?exercici get-es_realitza))
+    (bind ?tr (send ?dia get-temps_restant))
+    (if (>= ?tr (send ?realitzacio get-duracio))
+        then TRUE
+        else FALSE
+    )
+)
+
+;; TANCAR DIA COM A COMPLERT
+(defrule sintesi::tancar-dia-ple "Donar un dia per tancat quan ja estan planificats totes les activitats que hi caben"
+    ?d <- (dia-a-mig-omplir)
+    ?nda <- (num-dia-actual (count_dies ?cd))
+    ?da <- (dia-actual (dia ?dia))
+    ?ep <- (exercicis-pendents (flexibilitat $?efl) (forca $?efo) (equilibri $?eeq) (resistencia $?ere))
+    (test (not (any-instancep ((?inst Exercici)) (and (exercici-cap-al-dia ?inst ?dia) (or (member ?inst $?efl) (member ?inst $?efo) (member ?inst $?eeq) (member ?inst $?ere))))))
+
+    =>
+    
+    (printout t "tancar dia" crlf)
+    (modify ?nda (count_dies (+ ?cd 1)))
+    (retract ?da)
+    (retract ?d)
+)
+
+
 
 
 
