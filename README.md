@@ -45,13 +45,13 @@ precisas.
 - [x] Justificación de la metodología de  resolución de problemas más adecuada y como los problemas identificados en la fase anterior encajan en la metodología
 
 #### Implementació
-- [ ] Hay una representación adecuada de la ontología
-- [ ] La resolución del problema se divide en módulos usando los subproblemas identificados
+- [x] Hay una representación adecuada de la ontología
+- [x] La resolución del problema se divide en módulos usando los subproblemas identificados
 - [ ] La representación del proceso de resolución mediante reglas sigue el proceso de razonamiento establecido por la metodología de resolución de problemas escogida
 - [ ] Se ha seguido una metodología incremental, desarrollándose prototipos y se describe como se ha hecho
 ##### Implementació en CLIPS
-- [ ] Uso de deftemplates y objetos Existencia de módulos de reglas y mecanismos de control elaborados
-- [ ] Programación basada en cadenas de razonamiento y aprovechamiento del formalismo de reglas de producción
+- [x] Uso de deftemplates y objetos Existencia de módulos de reglas y mecanismos de control elaborados
+- [x] Programación basada en cadenas de razonamiento y aprovechamiento del formalismo de reglas de producción
 
 
 #### Jocs de prova
