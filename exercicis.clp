@@ -237,15 +237,15 @@
     )
 
     ([ResistenciaAlt] of Realitzacio
-         (duracio  25)
+         (duracio  40)
     )
 
     ([ResistenciaBaix] of Realitzacio
-         (duracio  15)
+         (duracio  20)
     )
 
     ([ResistenciaModerat] of Realitzacio
-         (duracio  20)
+         (duracio  300)
     )
 
     ([Rotacio_doble_maluc] of Flexibilitat
@@ -261,7 +261,7 @@
     )
 
     ([SeriesAlt] of Realitzacio
-         (duracio  5)
+         (duracio  7)
     )
 
     ([SeriesBaix] of Realitzacio
@@ -269,7 +269,7 @@
     )
 
     ([SeriesModerat] of Realitzacio
-         (duracio  4)
+         (duracio  5)
     )
 
     ([Sobrepes] of Patologia
@@ -1236,25 +1236,95 @@
 
 (defrule sintesi::afegir-exercicis-escalfament "Afegir exercici escalfament"
 	(declare (salience 6))
-    ?e <- (exercicis-pendents (flexibilitat $?ef))
+    ?e <- (exercicis-pendents (flexibilitat $?efe))
     (temporal (minuts_dia ?md))
     (dia-actual (dia ?inst))
     (test (> (send ?inst get-temps_restant) (* ?md (/ 9 10))))
-    (test (> (length$ $?ef) 0))
+    (test (> (length$ $?efe) 0))
 
     =>
     
-    (printout t "afegir" crlf)
-    (while (> (send ?inst get-temps_restant) (* ?md (/ 0 100))) do
+    (printout t "afegint ex escalfament" crlf)
+    (while (> (send ?inst get-temps_restant) (* ?md (/ 90 100))) do
         (bind $?ll (send ?inst get-composta_per))
-        (bind ?ex_escollit (random-slot ?ef))
+        (bind ?ex_escollit (random-slot ?efe))
         (send ?inst put-composta_per (insert$ ?ll (+ (length$ ?ll) 1)  ?ex_escollit))
 
         (bind ?tr (send ?inst get-temps_restant))
         (bind ?realitzacio (send ?ex_escollit get-es_realitza))
         (send ?inst put-temps_restant (- ?tr (send ?realitzacio get-duracio)))
+        
+        ; Borrem de la llista dexercicis pendents
+        (bind $?efe (delete-member$ $?efe ?ex_escollit))
+        (printout t $?efe crlf)
     )
-    (assert(exercici-afegit))
+    (modify ?e (flexibilitat $?efe))
+    (assert(exercici-escalfament-afegit))
+)
+
+(defrule sintesi::afegir-exercici-resistencia "afegir exercici resistencia"
+    (exercici-escalfament-afegit)
+    (not(exercici-resistencia-afegit))
+    ?e <- (exercicis-pendents (resistencia $?ere))
+    (dia-actual (dia ?inst))
+    (test (> (length$ $?ere) 0))
+
+    =>
+
+    (printout t "afegint ex resistencia" crlf)
+    (send ?inst get-temps_restant)
+    (bind $?ll (send ?inst get-composta_per))
+    (bind ?ex_escollit (random-slot ?ere))
+    (send ?inst put-composta_per (insert$ ?ll (+ (length$ ?ll) 1)  ?ex_escollit))
+
+    (bind ?tr (send ?inst get-temps_restant))
+    (bind ?realitzacio (send ?ex_escollit get-es_realitza))
+    (send ?inst put-temps_restant (- ?tr (send ?realitzacio get-duracio)))
+    
+    ; Borrem de la llista dexercicis pendents
+    (bind $?ere (delete-member$ $?ere ?ex_escollit))
+    (printout t $?ere crlf)
+    
+    (modify ?e (resistencia $?ere))
+    (assert(exercici-resistencia-afegit))
+)
+
+(defrule sintesi::afegir-exercicis-equilibri-forca "afegir exercicis generals"
+    (exercici-resistencia-afegit)
+    (not(exercici-equilibri-forca-afegit))
+    (temporal (minuts_dia ?md))
+    ?e <- (exercicis-pendents (forca $?efo) (equilibri $?eeq))
+    (dia-actual (dia ?inst))
+
+    =>
+
+    (printout t "afegint ex equilibri forca" crlf)
+    (while (> (send ?inst get-temps_restant) (* ?md (/ 5 100))) do
+        (bind $?ll (send ?inst get-composta_per))
+        (bind ?ex_escollit (random-slot ?efo))
+        (send ?inst put-composta_per (insert$ ?ll (+ (length$ ?ll) 1)  ?ex_escollit))
+
+        (bind ?tr (send ?inst get-temps_restant))
+        (bind ?realitzacio (send ?ex_escollit get-es_realitza))
+        (send ?inst put-temps_restant (- ?tr (send ?realitzacio get-duracio)))
+
+
+        (bind $?ll (send ?inst get-composta_per))
+        (bind ?ex_escollit (random-slot ?eeq))
+        (send ?inst put-composta_per (insert$ ?ll (+ (length$ ?ll) 1)  ?ex_escollit))
+
+        (bind ?tr (send ?inst get-temps_restant))
+        (bind ?realitzacio (send ?ex_escollit get-es_realitza))
+        (send ?inst put-temps_restant (- ?tr (send ?realitzacio get-duracio)))
+        
+        ; Borrem de la llista dexercicis pendents
+        ; (bind $?efe (delete-member$ $?efe ?ex_escollit))
+        ; (printout t $?efe crlf)
+    )
+    ; (modify ?e (flexibilitat $?efe))
+
+
+    (assert(exercici-equilibri-forca-afegit))
 )
 
 (deffunction sintesi::exercici-cap-al-dia (?exercici ?dia)
@@ -1276,10 +1346,12 @@
     ?nda <- (num-dia-actual (count_dies ?cd))
     ?da <- (dia-actual (dia ?dia))
 
-    (exercici-afegit)
+    ?eea <- (exercici-escalfament-afegit)
+    ?era <- (exercici-resistencia-afegit)
+    ?ega <- (exercici-equilibri-forca-afegit)
 
-    ;?ep <- (exercicis-pendents (flexibilitat $?efl) (forca $?efo) (equilibri $?eeq) (resistencia $?ere))
-    (test (eq (not (any-instancep ((?inst Exercici)) (eq (exercici-cap-al-dia ?inst ?dia) TRUE))) TRUE)) ;(or (member ?inst $?efl) (member ?inst $?efo) (member ?inst $?eeq) (member ?inst $?ere))))))
+    ?ep <- (exercicis-pendents (flexibilitat $?efl) (forca $?efo) (equilibri $?eeq) (resistencia $?ere))
+    ; (test (not (any-instancep ((?inst Exercici)) (and (exercici-cap-al-dia ?inst ?dia) (or (member ?inst $?efl) (member ?inst $?efo) (member ?inst $?eeq) (member ?inst $?ere))))))
 
     =>
     ; (printout t )
@@ -1287,7 +1359,21 @@
     ; (printout t ?dia crlf)
     (modify ?nda (count_dies (+ ?cd 1)))
     (retract ?da)
+    (retract ?eea)
+    (retract ?era)
+    (retract ?ega)
     (retract ?d)
+)
+
+
+(defrule passar-a-imprimir "Passem a imprimir"
+    ?nda <- (num-dia-actual (count_dies ?cd))
+    (temporal (num_dies ?nd))
+    (test (> ?cd ?nd))
+
+    =>
+
+    (focus imprimir)
 )
 
 
