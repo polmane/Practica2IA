@@ -2,7 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology ontologia.owl
-;;; :Date 19/12/2022 20:14:48
+;;; :Date 18/12/2022 17:14:48
 
 (defclass Exercici
     (is-a USER)
