@@ -498,17 +498,6 @@
     )
 )
 
-(deffunction sintesi::exercici-cap-al-dia (?exercici ?dia)
-    
-    (bind ?realitzacio (send ?exercici get-es_realitza))
-    (bind ?tr (send ?dia get-temps_restant))
-    (bind ?duracio (send ?realitzacio get-duracio))
-    (if (>= ?tr ?duracio)
-        then TRUE
-        else FALSE
-    )
-)
-
 
 ;;;---------------------------------------------------------------------------
 ;;;----------  			    DEFRULES MODUL INFO USUARI				----------
