@@ -1,0 +1,13 @@
+digraph g {
+	"Exercici" -> "Resistencia" [label="has subclass"]
+	"owl:Thing" -> "Persona" [label="has subclass"]
+	"Solucio" -> "Exercici" [label="composta_per (Domain>Range)"]
+	"owl:Thing" -> "Realitzacio" [label="has subclass"]
+	"owl:Thing" -> "Solucio" [label="has subclass"]
+	"Exercici" -> "Flexibilitat" [label="has subclass"]
+	"Exercici" -> "Realitzacio" [label="es_realitza (Domain>Range)"]
+	"owl:Thing" -> "Exercici" [label="has subclass"]
+	"owl:Thing" -> "Patologia" [label="has subclass"]
+	"Exercici" -> "Fortalesa" [label="has subclass"]
+	"Exercici" -> "Equilibri" [label="has subclass"]
+}
